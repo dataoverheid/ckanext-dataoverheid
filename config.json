@@ -1,0 +1,131 @@
+{
+    "controlled_vocabularies": [
+        {
+            "name": "ADMS:Changetype",
+            "local": "adms_changetype.json",
+            "online": "https://waardelijsten.dcat-ap-donl.nl/adms_changetype.json"
+        },
+        {
+            "name": "ADMS:DistributieStatus",
+            "local": "adms_distributiestatus.json",
+            "online": "https://waardelijsten.dcat-ap-donl.nl/adms_distributiestatus.json"
+        },
+        {
+            "name": "DONL:Catalogs",
+            "local": "donl_catalogs.json",
+            "online": "https://waardelijsten.dcat-ap-donl.nl/donl_catalogs.json"
+        },
+        {
+            "name": "DONL:Language",
+            "local": "donl_language.json",
+            "online": "https://waardelijsten.dcat-ap-donl.nl/donl_language.json"
+        },
+        {
+            "name": "DONL:Organization",
+            "local": "donl_organization.json",
+            "online": "https://waardelijsten.dcat-ap-donl.nl/donl_organization.json"
+        },
+        {
+            "name": "IANA:Mediatypes",
+            "local": "iana_mediatypes.json",
+            "online": "https://waardelijsten.dcat-ap-donl.nl/iana_mediatypes.json"
+        },
+        {
+            "name": "MDR:FiletypeNAL",
+            "local": "mdr_filetype_nal.json",
+            "online": "https://waardelijsten.dcat-ap-donl.nl/mdr_filetype_nal.json"
+        },
+        {
+            "name": "Overheid:DatasetStatus",
+            "local": "overheid_dataset_status.json",
+            "online": "https://waardelijsten.dcat-ap-donl.nl/overheid_dataset_status.json"
+        },
+        {
+            "name": "Overheid:Frequency",
+            "local": "overheid_frequency.json",
+            "online": "https://waardelijsten.dcat-ap-donl.nl/overheid_frequency.json"
+        },
+        {
+            "name": "Overheid:License",
+            "local": "overheid_license.json",
+            "online": "https://waardelijsten.dcat-ap-donl.nl/overheid_license.json"
+        },
+        {
+            "name": "Overheid:Openbaarheidsniveau",
+            "local": "overheid_openbaarheidsniveau.json",
+            "online": "https://waardelijsten.dcat-ap-donl.nl/overheid_openbaarheidsniveau.json"
+        },
+        {
+            "name": "Overheid:SpatialScheme",
+            "local": "overheid_spatial_scheme.json",
+            "online": "https://waardelijsten.dcat-ap-donl.nl/overheid_spatial_scheme.json"
+        },
+        {
+            "name": "Overheid:SpatialGemeente",
+            "local": "overheid_spatial_gemeente.json",
+            "online": "https://waardelijsten.dcat-ap-donl.nl/overheid_spatial_gemeente.json"
+        },
+        {
+            "name": "Overheid:SpatialKoninkrijksdeel",
+            "local": "overheid_spatial_koninkrijksdeel.json",
+            "online": "https://waardelijsten.dcat-ap-donl.nl/overheid_spatial_koninkrijksdeel.json"
+        },
+        {
+            "name": "Overheid:SpatialProvincie",
+            "local": "overheid_spatial_provincie.json",
+            "online": "https://waardelijsten.dcat-ap-donl.nl/overheid_spatial_provincie.json"
+        },
+        {
+            "name": "Overheid:SpatialWaterschap",
+            "local": "overheid_spatial_waterschap.json",
+            "online": "https://waardelijsten.dcat-ap-donl.nl/overheid_spatial_waterschap.json"
+        },
+        {
+            "name": "Overheid:Taxonomiebeleidsagenda",
+            "local": "overheid_taxonomiebeleidsagenda.json",
+            "online": "https://waardelijsten.dcat-ap-donl.nl/overheid_taxonomiebeleidsagenda.json"
+        }
+    ],
+    "solr_suggestions_build_url":  "http://127.0.0.1:8983/solr/ckan_default/suggest_component?suggest.build=true",
+    "solr_dynamic_files_target_directories": [
+        "ckanext/dataoverheid/resources/solr/5.3/",
+        "ckanext/dataoverheid/resources/solr/7.4/"
+    ],
+    "solr_donl_organization_file": "ckanext/dataoverheid/resources/controlled_vocabularies/donl_organization.json",
+    "taxonomies": [
+        {
+            "name": "DONL:Communities",
+            "online": "https://data.overheid.nl/service/waardelijsten/donl_communities"
+        }
+    ],
+    "communities": [
+        {
+            "uri": "https://data.overheid.nl/communities/ministerie-van-infrastructuur-en-waterstaat",
+            "authority": [
+                "http://standaarden.overheid.nl/owms/terms/minienw",
+                "http://standaarden.overheid.nl/owms/terms/Rijkswaterstaat",
+                "http://standaarden.overheid.nl/owms/terms/Inspectie_Leefomgeving_en_Transport",
+                "http://standaarden.overheid.nl/owms/terms/pbl",
+                "http://standaarden.overheid.nl/owms/terms/Koninklijk_Nederlands_Meteorologisch_Instituut",
+                "http://standaarden.overheid.nl/owms/terms/RDW_(Dienst_Wegverkeer)",
+                "http://data.overheid.nl/organisatie/prorail",
+                "http://standaarden.overheid.nl/owms/terms/CBR"
+            ]
+        }
+    ],
+    "non_open_licenses": [
+        "http://standaarden.overheid.nl/owms/terms/geslotenlicentie",
+        "http://standaarden.overheid.nl/owms/terms/licentieonbekend"
+    ],
+    "properties_to_remove": [
+        "author",
+        "author_email",
+        "maintainer",
+        "maintainer_email",
+        "license_title",
+        "relationships_as_object",
+        "relationships_as_subject"
+    ],
+    "resource_properties_to_remove": [
+    ]
+}
