@@ -193,7 +193,7 @@
         <field name="high_value" type="boolean" indexed="true" stored="true"/>
         <field name="referentie_data" type="boolean" indexed="true" stored="true"/>
         <field name="basis_register" type="boolean" indexed="true" stored="true"/>
-        <field name="national_coverage" type="boolean" indexed="true" stored="true"/>
+        <field name="level_of_coverage" type="text" indexed="true" stored="true" multiValued="false"/>
 
         <!-- DCAT Distribution -->
         <field name="res_metadata_language" type="string" indexed="true" stored="true" multiValued="true"/>
@@ -305,7 +305,7 @@
         <field name="facet_communities" type="string" indexed="true" stored="true" multiValued="true"/>
         <field name="facet_res_format" type="string" indexed="true" stored="true" multiValued="true"/>
 		<field name="facet_tags" type="string" indexed="true" stored="true" multiValued="true"/>
-        <field name="facet_national_coverage" type="string" indexed="true" stored="true"/>
+        <field name="facet_level_of_coverage" type="string" indexed="true" stored="true"/>
         <field name="facet_groups" type="string" indexed="true" stored="true" multiValued="true"/>
 
         <!-- Dynamic -->
@@ -392,7 +392,7 @@
     <copyField source="communities" dest="facet_communities"/>
     <copyField source="res_format" dest="facet_res_format"/>
 	<copyField source="tags" dest="facet_tags"/>
-    <copyField source="national_coverage" dest="facet_national_coverage"/>
+    <copyField source="level_of_coverage" dest="facet_level_of_coverage"/>
     <copyField source="groups" dest="facet_groups"/>
 
 </schema>

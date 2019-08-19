@@ -88,7 +88,7 @@
             <str name="facet.field">facet_communities</str>
             <str name="facet.field">facet_res_format</str>
 			<str name="facet.field">facet_tags</str>
-            <str name="facet.field">facet_national_coverage</str>
+            <str name="facet.field">facet_level_of_coverage</str>
             <str name="facet.field">facet_groups</str>
         </lst>
     </requestHandler>

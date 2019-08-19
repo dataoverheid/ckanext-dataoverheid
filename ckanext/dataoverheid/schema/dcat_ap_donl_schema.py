@@ -92,7 +92,7 @@ def create_schema(original_schema):
         'referentie_data':          [default(False), single_value, boolean, to_extras],
         'basis_register':           [default(False), single_value, boolean, to_extras],
 
-        'national_coverage':        [default(False), single_value, boolean, to_extras],
+        'level_of_coverage':        [optional, single_value, controlled_vocabulary('DONL:LevelOfCoverage'), to_extras],
 
         '__after':                  [multi_field_validation]
     })
@@ -215,7 +215,7 @@ def update_schema(original_schema):
         'referentie_data':          [default(False), single_value, boolean, to_extras],
         'basis_register':           [default(False), single_value, boolean, to_extras],
 
-        'national_coverage':        [default(False), single_value, boolean, to_extras],
+        'level_of_coverage':        [optional, single_value, controlled_vocabulary('DONL:LevelOfCoverage'), to_extras],
 
         '__after':                  [multi_field_validation]
     })
@@ -326,7 +326,7 @@ def show_schema(original_schema):
         'referentie_data':          [from_extras, recommended, single_value],
         'basis_register':           [from_extras, recommended, single_value],
 
-        'national_coverage':        [from_extras, recommended, single_value],
+        'level_of_coverage':        [from_extras, optional, single_value],
 
         'changetype':               [from_extras, recommended, single_value]
     })

@@ -26,6 +26,11 @@
             "online": "https://waardelijsten.dcat-ap-donl.nl/donl_organization.json"
         },
         {
+            "name": "DONL:LevelOfCoverage",
+            "local": "donl_level_of_coverage.json",
+            "online": "https://waardelijsten.dcat-ap-donl.nl/donl_level_of_coverage.json"
+        },
+        {
             "name": "IANA:Mediatypes",
             "local": "iana_mediatypes.json",
             "online": "https://waardelijsten.dcat-ap-donl.nl/iana_mediatypes.json"
