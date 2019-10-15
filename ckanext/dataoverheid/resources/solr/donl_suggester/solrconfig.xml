@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <abortOnConfigurationError>${solr.abortOnConfigurationError:true}</abortOnConfigurationError>
+    <luceneMatchVersion>LUCENE_82</luceneMatchVersion>
+    <dataDir>/var/solr/data/donl_suggester/data</dataDir>
+
+    <directoryFactory name="DirectoryFactory" class="${solr.directoryFactory:solr.StandardDirectoryFactory}" />
+    <schemaFactory class="ClassicIndexSchemaFactory" />
+
+    <updateHandler class="solr.DirectUpdateHandler2" />
+
+    <query>
+        <maxBooleanClauses>1024</maxBooleanClauses>
+        <filterCache class="solr.FastLRUCache" size="512" initialSize="512" autowarmCount="0" />
+        <queryResultCache class="solr.LRUCache" size="512" initialSize="512" autowarmCount="0" />
+        <documentCache class="solr.LRUCache" size="512" initialSize="512" autowarmCount="0" />
+        <enableLazyFieldLoading>true</enableLazyFieldLoading>
+        <queryResultWindowSize>20</queryResultWindowSize>
+        <queryResultMaxDocsCached>200</queryResultMaxDocsCached>
+
+        <listener event="newSearcher" class="solr.QuerySenderListener">
+            <arr name="queries" />
+        </listener>
+        <listener event="firstSearcher" class="solr.QuerySenderListener">
+            <arr name="queries">
+                <lst>
+                    <str name="q">*:*</str>
+                </lst>
+            </arr>
+        </listener>
+
+        <useColdSearcher>false</useColdSearcher>
+        <maxWarmingSearchers>2</maxWarmingSearchers>
+    </query>
+
+    <requestDispatcher>
+        <requestParsers enableRemoteStreaming="true" multipartUploadLimitInKB="2048000" />
+        <httpCaching never304="true" />
+    </requestDispatcher>
+
+    <requestHandler name="/select" class="solr.SearchHandler">
+        <lst name="defaults">
+            <str name="q.op">AND</str>
+            <str name="echoParams">explicit</str>
+	        <str name="df">_text_</str>
+            <str name="qf">title authority_nl authority_en theme_nl theme_en</str>
+            <int name="rows">10</int>
+            <int name="start">0</int>
+            <str name="defType">edismax</str>
+        </lst>
+    </requestHandler>
+
+    <requestHandler name="/suggest" class="solr.SearchHandler" startup="lazy">
+		<lst name="defaults">
+			<str name="suggest">true</str>
+			<str name="suggest.dictionary">title_suggester</str>
+			<str name="suggest.dictionary">authority_suggester_nl</str>
+            <str name="suggest.dictionary">authority_suggester_en</str>
+            <str name="suggest.dictionary">theme_suggester_nl</str>
+            <str name="suggest.dictionary">theme_suggester_en</str>
+			<str name="suggest.count">5</str>
+		</lst>
+		<arr name="components">
+			<str>suggest_component</str>
+		</arr>
+	</requestHandler>
+
+    <requestHandler name="/admin/ping" class="solr.PingRequestHandler">
+        <str name="healthcheckFile">/var/solr/data/donl_suggester/conf/core-available.txt</str>
+        <lst name="invariants">
+            <str name="qt">/select</str>
+            <str name="q">*:*</str>
+        </lst>
+        <lst name="defaults">
+            <str name="echoParams">all</str>
+        </lst>
+    </requestHandler>
+
+    <requestHandler name="/debug/dump" class="solr.DumpRequestHandler">
+        <lst name="defaults">
+            <str name="echoParams">explicit</str>
+            <str name="echoHandler">true</str>
+        </lst>
+    </requestHandler>
+
+    <requestHandler name="/analysis/field" class="solr.FieldAnalysisRequestHandler" startup="lazy" />
+
+    <requestHandler name="/analysis/document" class="solr.DocumentAnalysisRequestHandler" startup="lazy" />
+
+    <searchComponent name="suggest_component" class="solr.SuggestComponent">
+		<lst name="suggester">
+			<str name="name">title_suggester</str>
+			<str name="lookupImpl">AnalyzingInfixLookupFactory</str>
+			<str name="dictionaryImpl">DocumentDictionaryFactory</str>
+			<str name="indexPath">title_suggester</str>
+			<str name="field">title</str>
+			<str name="payloadField">payload</str>
+            <str name="weightField">weight</str>
+            <str name="contextField">community</str>
+			<str name="suggestAnalyzerFieldType">text_suggest</str>
+			<str name="buildOnStartup">true</str>
+		</lst>
+		<lst name="suggester">
+			<str name="name">authority_suggester_nl</str>
+			<str name="lookupImpl">AnalyzingInfixLookupFactory</str>
+			<str name="dictionaryImpl">DocumentDictionaryFactory</str>
+			<str name="indexPath">authority_suggester_nl</str>
+			<str name="field">authority_nl</str>
+			<str name="payloadField">payload</str>
+			<str name="weightField">weight</str>
+            <str name="contextField">community</str>
+			<str name="suggestAnalyzerFieldType">text_suggest</str>
+			<str name="buildOnStartup">true</str>
+		</lst>
+		<lst name="suggester">
+			<str name="name">authority_suggester_en</str>
+			<str name="lookupImpl">AnalyzingInfixLookupFactory</str>
+			<str name="dictionaryImpl">DocumentDictionaryFactory</str>
+			<str name="indexPath">authority_suggester_en</str>
+			<str name="field">authority_en</str>
+			<str name="payloadField">payload</str>
+			<str name="weightField">weight</str>
+            <str name="contextField">community</str>
+			<str name="suggestAnalyzerFieldType">text_suggest</str>
+			<str name="buildOnStartup">true</str>
+		</lst>
+        <lst name="suggester">
+			<str name="name">theme_suggester_nl</str>
+			<str name="lookupImpl">AnalyzingInfixLookupFactory</str>
+			<str name="dictionaryImpl">DocumentDictionaryFactory</str>
+			<str name="indexPath">theme_suggester_nl</str>
+			<str name="field">theme_nl</str>
+			<str name="payloadField">payload</str>
+			<str name="weightField">weight</str>
+            <str name="contextField">community</str>
+			<str name="suggestAnalyzerFieldType">text_suggest</str>
+			<str name="buildOnStartup">true</str>
+		</lst>
+		<lst name="suggester">
+			<str name="name">theme_suggester_en</str>
+			<str name="lookupImpl">AnalyzingInfixLookupFactory</str>
+			<str name="dictionaryImpl">DocumentDictionaryFactory</str>
+			<str name="indexPath">theme_suggester_en</str>
+			<str name="field">theme_en</str>
+			<str name="payloadField">payload</str>
+			<str name="weightField">weight</str>
+            <str name="contextField">community</str>
+			<str name="suggestAnalyzerFieldType">text_suggest</str>
+			<str name="buildOnStartup">true</str>
+		</lst>
+    </searchComponent>
+
+    <queryResponseWriter name="json" class="solr.JSONResponseWriter" default="true">
+        <str name="content-type">text/plain; charset=UTF-8</str>
+    </queryResponseWriter>
+
+    <admin>
+        <defaultQuery>*:*</defaultQuery>
+    </admin>
+
+</config>

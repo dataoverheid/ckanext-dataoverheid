@@ -19,9 +19,9 @@ Minimum version requirements:
 
 | Software | Version  |
 |----------|----------|
-| Python   | \>=2.6   |
-| CKAN     | \>=2.5   |
-| Solr     | \>=5.3   |
+| Python   | \>=2.7   |
+| CKAN     | \>=2.8   |
+| Solr     | \>=8.0   |
 
 The CKAN extension occasionally makes HTTP(S) requests to [waardelijsten.dcat-ap-donl.nl](https://waardelijsten.dcat-ap-donl.nl) and [data.overheid.nl](https://data.overheid.nl), ensure that your firewall allows these requests.
 
@@ -32,21 +32,19 @@ Assuming a standard (empty) CKAN installation on a Ubuntu server; follow these s
 ### CKAN
 From your terminal of choice:
 ```bash
-/usr/lib/ckan/default/bin/activate
+. /usr/lib/ckan/default/bin/activate
 cd /usr/lib/ckan/default/src/
 pip install -e git+https://github.com/dataoverheid/ckanext-dataoverheid.git#egg=ckanext-dataoverheid
 pip install -r /usr/lib/ckan/default/src/ckanext-dataoverheid/requirements.txt
-
 ```
 
 Edit your `production.ini` (or `development.ini`) and ensure the following key/value pairs are present (both files should be located in `/etc/ckan/default/`:
 
 ```ini
-solr_url = http://127.0.0.1:8983/solr/ckan
-licenses_group_url = https://waardelijsten.dcat-ap-donl.nl/overheid_license.json
+solr_url = http://127.0.0.1:8983/solr/donl_dataset
+licenses_group_url = file:///usr/lib/ckan/default/src/ckanext-dataoverheid/ckanext/dataoverheid/resources/vocabularies/ckan_license.json
 ckan.mimetype_guess = None
-ckan.plugins = donl-authorization donl-scheme
-
+ckan.plugins = donl-authorization donl-scheme donl-rdf donl-interface
 ```
 
 *Do note that the `donl-authorization` plug-in is optional, it allows individual users to perform dataset_purge actions via the CKAN API when they are registered as the `creator_user_id` of said dataset.*
@@ -56,16 +54,17 @@ ckan.plugins = donl-authorization donl-scheme
 Add the following two entries to the crontab of the Linux user running CKAN (probably `www-data`):
 
 ```bash
-30 23 * * * (cd /usr/lib/ckan/default/src/ckanext-dataoverheid && python ckanext/dataoverheid/task/controlled_vocabulary_updater.py)
-45 23 * * * (cd /usr/lib/ckan/default/src/ckanext-dataoverheid && python ckanext/dataoverheid/task/solr_dynamic_files_updater.py)
+30 23 * * * (cd /usr/lib/ckan/default/src/ckanext-dataoverheid && /usr/lib/ckan/default/bin/python2.7 python ckanext/dataoverheid/task/list_updater.py)
+45 23 * * * (cd /usr/lib/ckan/default/src/ckanext-dataoverheid && /usr/lib/ckan/default/bin/python2.7 ckanext/dataoverheid/task/solr_updater.py)
 ```
 
-Afterwards, execute these two entries manually:
+Afterwards, execute these commands:
 
 ```bash
-(sudo -u {CKAN_USER} && cd /usr/lib/ckan/default/src/ckanext-dataoverheid && python ckanext/dataoverheid/task/controlled_vocabulary_updater.py)
-(sudo -u {CKAN_USER} && cd /usr/lib/ckan/default/src/ckanext-dataoverheid && python ckanext/dataoverheid/task/solr_dynamic_files_updater.py)
-
+sudo su {CKAN_USER}
+touch /usr/lib/ckan/default/src/ckanext-dataoverheid/ckanext/dataoverheid/resources/solr/donl_dataset/lang/synonyms_uri_nl.txt
+touch /usr/lib/ckan/default/src/ckanext-dataoverheid/ckanext/dataoverheid/resources/solr/donl_dataset/lang/synonyms_uri_en.txt
+(cd /usr/lib/ckan/default/src/ckanext-dataoverheid && /usr/lib/ckan/default/bin/python2.7 ckanext/dataoverheid/task/list_updater.py)
 ```
 
 ### Solr
@@ -73,16 +72,20 @@ Afterwards, execute these two entries manually:
 To create and configure your Solr core for CKAN:
 
 ```bash
-sudo -u solr /opt/solr/bin/solr create -c ckan
-sudo rm /var/solr/data/ckan/conf/protwords.txt
-sudo rm /var/solr/data/ckan/conf/solrconfig.xml
-sudo rm /var/solr/data/ckan/conf/managed-schema
-sudo rm /var/solr/data/ckan/conf/stopwords.txt
-sudo rm /var/solr/data/ckan/conf/synonyms.txt
-sudo mkdir /var/lib/solr
-sudo chown solr /var/lib/solr -R
-sudo ln -sf /usr/lib/ckan/default/src/ckanext-dataoverheid/ckanext/dataoverheid/resources/solr/5.3/ /var/solr/data/ckan/conf/
+sudo -u solr /opt/solr/bin/solr create -c donl_dataset
+sudo -u solr /opt/solr/bin/solr create -c donl_suggester
+sudo rm -rf /var/solr/data/donl_dataset/conf
+sudo rm -rf /var/solr/data/donl_suggester/conf
+sudo ln -sf /usr/lib/ckan/default/src/ckanext-dataoverheid/ckanext/dataoverheid/resources/solr/donl_dataset /var/solr/data/donl_dataset/conf
+sudo ln -sf /usr/lib/ckan/default/src/ckanext-dataoverheid/ckanext/dataoverheid/resources/solr/donl_suggester /var/solr/data/donl_suggester/conf
+sudo service solr restart
+```
 
+Now, as the {CKAN_USER}:
+
+```bash
+sudo su {CKAN_USER}
+(cd /usr/lib/ckan/default/src/ckanext-dataoverheid && /usr/lib/ckan/default/bin/python2.7 ckanext/dataoverheid/task/solr_updater.py)
 ```
 
 ### Finishing up
@@ -92,7 +95,6 @@ Restart both CKAN and Solr:
 ```bash
 sudo service solr restart
 sudo service apache2 restart
-
 ```
 
 Your CKAN installation is now operational and running with the `ckanext-dataoverheid` extension.

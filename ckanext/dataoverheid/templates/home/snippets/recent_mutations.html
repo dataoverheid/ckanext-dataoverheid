@@ -1,0 +1,37 @@
+<div class="box">
+    <section class="group-list module module-narrow module-shallow">
+        <header class="module-heading">
+            <h3 class="media-heading"><i class="fa fa-book"></i> {{ _('Latest mutations') }}</h3>
+        </header>
+        <ul class="list-unstyled dataset-list">
+            {% if latest_datasets|length > 0 %}
+                {% for dataset in latest_datasets %}
+                    <li class="dataset-item module-content">
+                        <div class="dataset-content">
+                            <h3 class="dataset-heading">
+                                <a href="{{ h.url_for(controller='package', action='read', id=dataset.name) }}">{{ h.truncate(dataset.title, 75) }}</a>
+                            </h3>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    {% if dataset.changetype == ':created' %}
+                                        {% set date_created_formatted = h.render_datetime(dataset.metadata_created) %}
+                                        {{ _('created on <span title="{date}">{date_formatted}</span>').format(date=dataset.metadata_created, date_formatted=date_created_formatted) }}
+                                    {% else %}
+                                        {% set date_modified_formatted = h.render_datetime(dataset.metadata_modified) %}
+                                        {{ _('updated on <span title="{date}">{date_formatted}</span>').format(date=dataset.metadata_modified, date_formatted=date_modified_formatted) }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                {% endfor %}
+            {% else %}
+                <li class="dataset-item module-content">
+                    <div class="dataset-content">
+                        <h3 class="dataset-heading empty">{{ _('None') }}</h3>
+                    </div>
+                </li>
+            {% endif %}
+        </ul>
+    </section>
+</div>
