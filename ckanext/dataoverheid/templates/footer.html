@@ -1,0 +1,51 @@
+{% ckan_extends %}
+
+{% block footer_content %}
+    <div class="row">
+        {% set is_admin = c.userobj and c.userobj.sysadmin %}
+        <div class="col-md-3 footer-links">
+            <h4>{{ _('DCAT-AP-DONL 1.1') }}</h4>
+            <ul class="list-unstyled">
+                <li><i class="fa fa-fw fa-list-ul" aria-hidden="true"></i> <a href="https://dcat-ap-donl.readthedocs.io">{{ _('Documentation') }}</a></li>
+                <li><i class="fa fa-fw fa-book" aria-hidden="true"></i> <a href="https://waardelijsten.dcat-ap-donl.nl">{{ _('Controlled vocabularies') }}</a></li>
+                <li><i class="fa fa-fw fa-github" aria-hidden="true"></i> <a href="https://github.com/dataoverheid/ckanext-dataoverheid">{{ _('Ckanext-DataOverheid') }}</a></li>
+            </ul>
+        </div>
+        <div class="{% if is_admin %}col-md-3{% else %}col-md-6{% endif %} footer-links">
+            <h4>{{ _('Account') }}</h4>
+            <ul class="list-unstyled">
+                {% if c.userobj %}
+                    <li><i class="fa fa-fw fa-user-circle" aria-hidden="true"></i> <a href="{{ h.url_for(controller='user', action='read', id=c.userobj.name) }}">{{ c.userobj.display_name }}</a>
+                    <li><i class="fa fa-fw fa-tachometer" aria-hidden="true"></i> <a href="{{ h.url_for(controller='dashboard', action='index') }}">{{ _('Dashboard ({activities})').format(activities=h.new_activities()) }}</a></li>
+                    <li><i class="fa fa-fw fa-cog" aria-hidden="true"></i> <a href="{{ h.url_for(controller='user', action='edit') }}">{{ _('Settings') }}</a></li>
+                    <li><i class="fa fa-fw fa-sign-out" aria-hidden="true"></i> <a href="{{ h.url_for(controller='user', action='logout') }}">{{ _('Logout') }}</a></li>
+                {% else %}
+                    <li><i class="fa fa-fw fa-sign-in" aria-hidden="true"></i> <a href="{{ h.url_for(controller='user', action='login') }}">{{ _('Login') }}</a></li>
+                    {% if h.check_access('user_create') %}
+                        <li><i class="fa fa-fw fa-book" aria-hidden="true"></i> <a href="{{ h.url_for(controller='user', action='register') }}">{{ _('Register') }}</a></li>
+                    {% endif %}
+                {% endif %}
+            </ul>
+        </div>
+        {% if is_admin %}
+            <div class="col-md-3 footer-links">
+                <h4>{{ _('Sysadmin') }}</h4>
+                <ul class="list-unstyled">
+                    <li><i class="fa fa-fw fa-gavel" aria-hidden="true"></i> <a href="{{ h.url_for(controller='admin', action='index') }}">{{ _('Admin panel') }}</a></li>
+                    <li><i class="fa fa-fw fa-desktop" aria-hidden="true"></i> <a href="{{ h.url_for(controller='revision', action='index') }}">{{ _('Activity monitoring') }}</a></li>
+                    <li><i class="fa fa-fw fa-trash" aria-hidden="true"></i> <a href="{{ h.url_for(controller='admin', action='trash') }}">{{ _('Deleted datasets') }}</a></li>
+                    <li><i class="fa fa-fw fa-cog" aria-hidden="true"></i> <a href="{{ h.url_for(controller='admin', action='config') }}">{{ _('Application settings') }}</a></li>
+                </ul>
+            </div>
+        {% endif %}
+        <div class="col-md-3 attribution">
+            {% block footer_lang %}
+                {% snippet "snippets/language_selector.html" %}
+            {% endblock %}
+
+            {% block footer_attribution %}
+                <h4><a class="hide-text ckan-footer-logo" href="https://ckan.org">CKAN</a></h4>
+            {% endblock %}
+        </div>
+    </div>
+{% endblock %}

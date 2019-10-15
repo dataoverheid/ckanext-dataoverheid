@@ -1,0 +1,28 @@
+<div class="box">
+    <section class="group-list module module-narrow module-shallow">
+        <header class="module-heading">
+            <h3 class="media-heading"><i class="fa fa-archive"></i> {{ _('Catalog statistics') }}</h3>
+        </header>
+        <table class="table module-content">
+            <tbody>
+                <tr>
+                    <th>{{ _('Datasets') }}</th>
+                    <td>{{ counts['datasets'] }}</td>
+                </tr>
+                <tr>
+                    <th>{{ _('Groups') }}</th>
+                    <td>{{ stats.group_count }}</td>
+                </tr>
+                <tr>
+                    <th>{{ _('Unique authorities') }}</th>
+                    <td>{{ counts['authorities'] }}</td>
+                </tr>
+                <tr>
+                    <th>{{ _('Source catalogs') }}</th>
+                    <td>{{ counts['catalogs'] }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+</div>
+
