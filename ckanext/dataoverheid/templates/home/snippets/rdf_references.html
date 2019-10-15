@@ -1,0 +1,23 @@
+<div class="box">
+    <section class="group-list module module-narrow module-shallow">
+        <header class="module-heading">
+            <h3 class="media-heading"><i class="fa fa-file"></i> {{ _('RDF data') }}</h3>
+        </header>
+        <table class="table module-content">
+            <tbody>
+                <tr>
+                    <th>{{ _('DCAT-AP-DONL') }}</th>
+                    <td><a href="">/dcat.rdf</a></td>
+                </tr>
+                <tr>
+                    <th>{{ _('Vocabularies') }}</th>
+                    <td><a href="">/vocabularies.rdf</a></td>
+                </tr>
+                <tr>
+                    <th>{{ _('Catalog') }}</th>
+                    <td><a href="{{ h.url_for('rdf_catalog', output='rdf') }}">/catalog.rdf</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+</div>

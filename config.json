@@ -1,131 +1,847 @@
 {
-    "controlled_vocabularies": [
-        {
-            "name": "ADMS:Changetype",
-            "local": "adms_changetype.json",
-            "online": "https://waardelijsten.dcat-ap-donl.nl/adms_changetype.json"
+    "solr": {
+        "host": "http://127.0.0.1:8983/solr",
+        "authorization": {
+            "username": "donl_updater",
+            "password": "QvAYjXyEHjoRzBDPJNiWniBzDWpCXTPU"
         },
-        {
-            "name": "ADMS:DistributieStatus",
-            "local": "adms_distributiestatus.json",
-            "online": "https://waardelijsten.dcat-ap-donl.nl/adms_distributiestatus.json"
+        "actions": {
+            "update": "update?commit=true",
+            "reload": "admin/cores?action=RELOAD",
+            "build_suggestions": "suggest?suggest.build=true"
         },
-        {
-            "name": "DONL:Catalogs",
-            "local": "donl_catalogs.json",
-            "online": "https://waardelijsten.dcat-ap-donl.nl/donl_catalogs.json"
+        "cores": {
+            "dataset": {
+                "name": "donl_dataset",
+                "conf": "ckanext/dataoverheid/resources/solr/donl_dataset/"
+            },
+            "suggester": {
+                "name": "donl_suggester",
+                "conf": "ckanext/dataoverheid/resources/solr/donl_suggester/",
+                "vocabularies": {
+                    "DONL:Organization": {
+                        "facet": "facet_authority",
+                        "suggester_field": "authority"
+                    },
+                    "Overheid:Taxonomiebeleidsagenda": {
+                        "facet": "facet_theme",
+                        "suggester_field": "theme"
+                    }
+                }
+            }
         },
-        {
-            "name": "DONL:Language",
-            "local": "donl_language.json",
-            "online": "https://waardelijsten.dcat-ap-donl.nl/donl_language.json"
+        "organizations_location": "ckanext/dataoverheid/resources/vocabularies/donl_organization.json"
+    },
+    "validation": {
+        "vocabulary_base_path": "ckanext/dataoverheid/resources/vocabularies",
+        "vocabularies": {
+            "ADMS:Changetype": {
+                "local": "adms_changetype.json",
+                "online": "https://waardelijsten.dcat-ap-donl.nl/adms_changetype.json"
+            },
+            "ADMS:DistributieStatus": {
+                "local": "adms_distributiestatus.json",
+                "online": "https://waardelijsten.dcat-ap-donl.nl/adms_distributiestatus.json"
+            },
+            "DONL:Catalogs": {
+                "local": "donl_catalogs.json",
+                "online": "https://waardelijsten.dcat-ap-donl.nl/donl_catalogs.json"
+            },
+            "DONL:Language": {
+                "local": "donl_language.json",
+                "online": "https://waardelijsten.dcat-ap-donl.nl/donl_language.json"
+            },
+            "DONL:Organization": {
+                "local": "donl_organization.json",
+                "online": "https://waardelijsten.dcat-ap-donl.nl/donl_organization.json"
+            },
+            "IANA:Mediatypes": {
+                "local": "iana_mediatypes.json",
+                "online": "https://waardelijsten.dcat-ap-donl.nl/iana_mediatypes.json"
+            },
+            "MDR:FiletypeNAL": {
+                "local": "mdr_filetype_nal.json",
+                "online": "https://waardelijsten.dcat-ap-donl.nl/mdr_filetype_nal.json"
+            },
+            "Overheid:DatasetStatus": {
+                "local": "overheid_dataset_status.json",
+                "online": "https://waardelijsten.dcat-ap-donl.nl/overheid_dataset_status.json"
+            },
+            "Overheid:Frequency": {
+                "local": "overheid_frequency.json",
+                "online": "https://waardelijsten.dcat-ap-donl.nl/overheid_frequency.json"
+            },
+            "Overheid:License": {
+                "local": "overheid_license.json",
+                "online": "https://waardelijsten.dcat-ap-donl.nl/overheid_license.json"
+            },
+            "Overheid:Openbaarheidsniveau": {
+                "local": "overheid_openbaarheidsniveau.json",
+                "online": "https://waardelijsten.dcat-ap-donl.nl/overheid_openbaarheidsniveau.json"
+            },
+            "Overheid:SpatialScheme": {
+                "local": "overheid_spatial_scheme.json",
+                "online": "https://waardelijsten.dcat-ap-donl.nl/overheid_spatial_scheme.json"
+            },
+            "Overheid:SpatialGemeente": {
+                "local": "overheid_spatial_gemeente.json",
+                "online": "https://waardelijsten.dcat-ap-donl.nl/overheid_spatial_gemeente.json"
+            },
+            "Overheid:SpatialKoninkrijksdeel": {
+                "local": "overheid_spatial_koninkrijksdeel.json",
+                "online": "https://waardelijsten.dcat-ap-donl.nl/overheid_spatial_koninkrijksdeel.json"
+            },
+            "Overheid:SpatialProvincie": {
+                "local": "overheid_spatial_provincie.json",
+                "online": "https://waardelijsten.dcat-ap-donl.nl/overheid_spatial_provincie.json"
+            },
+            "Overheid:SpatialWaterschap": {
+                "local": "overheid_spatial_waterschap.json",
+                "online": "https://waardelijsten.dcat-ap-donl.nl/overheid_spatial_waterschap.json"
+            },
+            "Overheid:Taxonomiebeleidsagenda": {
+                "local": "overheid_taxonomiebeleidsagenda.json",
+                "online": "https://waardelijsten.dcat-ap-donl.nl/overheid_taxonomiebeleidsagenda.json"
+            }
         },
-        {
-            "name": "DONL:Organization",
-            "local": "donl_organization.json",
-            "online": "https://waardelijsten.dcat-ap-donl.nl/donl_organization.json"
+        "taxonomy_base_path": "ckanext/dataoverheid/resources/taxonomies",
+        "taxonomies": {
+            "DONL:Communities": {
+                "local": "donl_communities.json",
+                "online": "https://data.overheid.nl/service/waardelijsten/donl_communities"
+            }
         },
-        {
-            "name": "IANA:Mediatypes",
-            "local": "iana_mediatypes.json",
-            "online": "https://waardelijsten.dcat-ap-donl.nl/iana_mediatypes.json"
+        "communities": [
+            {
+                "uri": "https://data.overheid.nl/communities/ministerie-van-infrastructuur-en-waterstaat",
+                "authority": [
+                    "http://standaarden.overheid.nl/owms/terms/minienw",
+                    "http://standaarden.overheid.nl/owms/terms/Rijkswaterstaat",
+                    "http://standaarden.overheid.nl/owms/terms/Inspectie_Leefomgeving_en_Transport",
+                    "http://standaarden.overheid.nl/owms/terms/pbl",
+                    "http://standaarden.overheid.nl/owms/terms/Koninklijk_Nederlands_Meteorologisch_Instituut",
+                    "http://standaarden.overheid.nl/owms/terms/RDW_(Dienst_Wegverkeer)",
+                    "http://standaarden.overheid.nl/owms/terms/CBR",
+                    "http://data.overheid.nl/organisatie/prorail"
+                ]
+            }
+        ],
+        "non_open_licenses": [
+            "http://standaarden.overheid.nl/owms/terms/geslotenlicentie",
+            "http://standaarden.overheid.nl/owms/terms/licentieonbekend"
+        ],
+        "date_planned_states": [
+            "http://data.overheid.nl/status/gepland",
+            "http://data.overheid.nl/status/in_onderzoek"
+        ]
+    },
+    "dcat": {
+        "namespaces": {
+            "RDF": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+            "RDFS": "http://www.w3.org/2000/01/rdf-schema#",
+            "DCAT": "http://www.w3.org/ns/dcat#",
+            "DCT": "http://purl.org/dc/terms/",
+            "DONL": "https://data.overheid.nl/dcat.rdf#",
+            "FOAF": "http://xmlns.com/foaf/0.1/",
+            "OWL": "http://www.w3.org/2002/07/owl#",
+            "ADMS": "http://www.w3.org/ns/adms#",
+            "V": "http://www.w3.org/2006/vcard/",
+            "SCHEMA": "http://schema.org/",
+            "XSD": "http://www.w3.org/2001/XMLSchema#",
+            "SPDX": "http://spdx.org/rdf/terms#",
+            "OVERHEID": "http://standaarden.overheid.nl/owms/terms/",
+            "IANA": "https://www.iana.org/assignments/media-types/"
         },
-        {
-            "name": "MDR:FiletypeNAL",
-            "local": "mdr_filetype_nal.json",
-            "online": "https://waardelijsten.dcat-ap-donl.nl/mdr_filetype_nal.json"
+        "outputs": {
+            "xml": {
+                "output_name": "xml",
+                "content-type": "application/xml"
+            },
+            "rdf": {
+                "output_name": "xml",
+                "content-type": "application/rdf+xml"
+            },
+            "ttl": {
+                "output_name": "n3",
+                "content-type": "text/n3"
+            },
+            "n3": {
+                "output_name": "n3",
+                "content-type": "text/n3"
+            }
         },
-        {
-            "name": "Overheid:DatasetStatus",
-            "local": "overheid_dataset_status.json",
-            "online": "https://waardelijsten.dcat-ap-donl.nl/overheid_dataset_status.json"
+        "vocabularies": "https://data.overheid.nl/vocabularies.rdf",
+        "language_map": {
+            "http://publications.europa.eu/resource/authority/language/ENG": "en",
+            "http://publications.europa.eu/resource/authority/language/NLD": "nl",
+            "http://publications.europa.eu/resource/authority/language/FRY": "fy"
         },
-        {
-            "name": "Overheid:Frequency",
-            "local": "overheid_frequency.json",
-            "online": "https://waardelijsten.dcat-ap-donl.nl/overheid_frequency.json"
-        },
-        {
-            "name": "Overheid:License",
-            "local": "overheid_license.json",
-            "online": "https://waardelijsten.dcat-ap-donl.nl/overheid_license.json"
-        },
-        {
-            "name": "Overheid:Openbaarheidsniveau",
-            "local": "overheid_openbaarheidsniveau.json",
-            "online": "https://waardelijsten.dcat-ap-donl.nl/overheid_openbaarheidsniveau.json"
-        },
-        {
-            "name": "Overheid:SpatialScheme",
-            "local": "overheid_spatial_scheme.json",
-            "online": "https://waardelijsten.dcat-ap-donl.nl/overheid_spatial_scheme.json"
-        },
-        {
-            "name": "Overheid:SpatialGemeente",
-            "local": "overheid_spatial_gemeente.json",
-            "online": "https://waardelijsten.dcat-ap-donl.nl/overheid_spatial_gemeente.json"
-        },
-        {
-            "name": "Overheid:SpatialKoninkrijksdeel",
-            "local": "overheid_spatial_koninkrijksdeel.json",
-            "online": "https://waardelijsten.dcat-ap-donl.nl/overheid_spatial_koninkrijksdeel.json"
-        },
-        {
-            "name": "Overheid:SpatialProvincie",
-            "local": "overheid_spatial_provincie.json",
-            "online": "https://waardelijsten.dcat-ap-donl.nl/overheid_spatial_provincie.json"
-        },
-        {
-            "name": "Overheid:SpatialWaterschap",
-            "local": "overheid_spatial_waterschap.json",
-            "online": "https://waardelijsten.dcat-ap-donl.nl/overheid_spatial_waterschap.json"
-        },
-        {
-            "name": "Overheid:Taxonomiebeleidsagenda",
-            "local": "overheid_taxonomiebeleidsagenda.json",
-            "online": "https://waardelijsten.dcat-ap-donl.nl/overheid_taxonomiebeleidsagenda.json"
-        }
-    ],
-    "solr_suggestions_build_url":  "http://127.0.0.1:8983/solr/ckan_default/suggest_component?suggest.build=true",
-    "solr_dynamic_files_target_directories": [
-        "ckanext/dataoverheid/resources/solr/5.3/",
-        "ckanext/dataoverheid/resources/solr/7.4/"
-    ],
-    "solr_donl_organization_file": "ckanext/dataoverheid/resources/controlled_vocabularies/donl_organization.json",
-    "taxonomies": [
-        {
-            "name": "DONL:Communities",
-            "online": "https://data.overheid.nl/service/waardelijsten/donl_communities"
-        }
-    ],
-    "communities": [
-        {
-            "uri": "https://data.overheid.nl/communities/ministerie-van-infrastructuur-en-waterstaat",
-            "authority": [
-                "http://standaarden.overheid.nl/owms/terms/minienw",
-                "http://standaarden.overheid.nl/owms/terms/Rijkswaterstaat",
-                "http://standaarden.overheid.nl/owms/terms/Inspectie_Leefomgeving_en_Transport",
-                "http://standaarden.overheid.nl/owms/terms/pbl",
-                "http://standaarden.overheid.nl/owms/terms/Koninklijk_Nederlands_Meteorologisch_Instituut",
-                "http://standaarden.overheid.nl/owms/terms/RDW_(Dienst_Wegverkeer)",
-                "http://data.overheid.nl/organisatie/prorail",
-                "http://standaarden.overheid.nl/owms/terms/CBR"
+        "templates": {
+            "identifier": "https://data.overheid.nl/dataset/{0}",
+            "dataset_definition": "https://data.overheid.nl/dataset/{0}.rdf",
+            "alternate_identifiers": [
+                "https://data.overheid.nl/dataset/{0}",
+                "https://data.overheid.nl/data/dataset/{0}"
             ]
+        },
+        "catalog_data": {
+            "title": "data.overheid.nl",
+            "description": "Het Nederlandse open data portaal",
+            "publisher": "https://data.overheid.nl/organisatie/koop",
+            "identifier": "https://data.overheid.nl",
+            "metadata_language": "http://publications.europa.eu/resource/authority/language/NLD",
+            "language": [
+                "http://publications.europa.eu/resource/authority/language/NLD",
+                "http://publications.europa.eu/resource/authority/language/ENG"
+            ],
+            "license": "http://creativecommons.org/publicdomain/zero/1.0/deed.nl",
+            "issued": "2018-12-22T15:00:00",
+            "themes": "http://standaarden.overheid.nl/owms/terms/TaxonomieBeleidsagenda",
+            "modified": "2019-09-01T10:00:00",
+            "rights": "Alle metadata uit deze catalogus is beschikbaar onder de CC0 licentie.",
+            "spatial": "http://standaarden.overheid.nl/owms/terms/Nederland"
+        },
+        "rdf": {
+            "_exclusions": [
+                "class",
+                "namespace",
+                "property"
+            ],
+            "catalog": {
+                "class": {
+                    "namespace": "DCAT",
+                    "name": "Catalog",
+                    "definition": "https://data.overheid.nl/catalog.rdf"
+                },
+                "title": {
+                    "type": "literal",
+                    "namespace": "DCT",
+                    "property": "title",
+                    "prefix": ""
+                },
+                "description": {
+                    "type": "literal",
+                    "namespace": "DCT",
+                    "property": "description",
+                    "prefix": ""
+                },
+                "publisher": {
+                    "type": "resource",
+                    "namespace": "DCT",
+                    "property": "publisher",
+                    "prefix": "",
+                    "class": {
+                        "namespace": "DONL",
+                        "name": "Organization"
+                    }
+                },
+                "identifier": {
+                    "type": "uri",
+                    "namespace": "FOAF",
+                    "property": "homepage",
+                    "prefix": ""
+                },
+                "language": {
+                    "type": "resource",
+                    "namespace": "DCT",
+                    "property": "language",
+                    "prefix": "",
+                    "class": {
+                        "namespace": "DONL",
+                        "name": "Language"
+                    }
+                },
+                "license": {
+                    "type": "resource",
+                    "namespace": "DCT",
+                    "property": "license",
+                    "prefix": "",
+                    "class": {
+                        "namespace": "DONL",
+                        "name": "License"
+                    }
+                },
+                "spatial": {
+                    "type": "resource",
+                    "namespace": "DCT",
+                    "property": "spatial",
+                    "prefix": "",
+                    "class": {
+                        "namespace": "OVERHEID",
+                        "name": "Koninkrijksdeel"
+                    }
+                },
+                "issued": {
+                    "type": "datetime",
+                    "namespace": "DCT",
+                    "property": "issued",
+                    "prefix": ""
+                },
+                "modified": {
+                    "type": "datetime",
+                    "namespace": "DCT",
+                    "property": "modified",
+                    "prefix": ""
+                },
+                "themes": {
+                    "type": "uri",
+                    "namespace": "DCAT",
+                    "property": "themeTaxonomy",
+                    "prefix": ""
+                },
+                "rights": {
+                    "type": "literal",
+                    "namespace": "DCT",
+                    "property": "rights",
+                    "prefix": ""
+                }
+            },
+            "dataset": {
+                "class": {
+                    "namespace": "DONL",
+                    "name": "Dataset"
+                },
+                "title": {
+                    "type": "literal",
+                    "namespace": "DCT",
+                    "property": "title",
+                    "prefix": ""
+                },
+                "notes": {
+                    "type": "literal",
+                    "namespace": "DCT",
+                    "property": "description",
+                    "prefix": ""
+                },
+                "tags": {
+                    "type": "literal",
+                    "namespace": "DCAT",
+                    "property": "keyword",
+                    "prefix": ""
+                },
+                "version": {
+                    "type": "literal",
+                    "namespace": "OWL",
+                    "property": "versionInfo",
+                    "prefix": ""
+                },
+                "version_notes": {
+                    "type": "literal",
+                    "namespace": "ADMS",
+                    "property": "versionNotes",
+                    "prefix": ""
+                },
+                "issued": {
+                    "type": "datetime",
+                    "namespace": "DCT",
+                    "property": "issued",
+                    "prefix": ""
+                },
+                "modified": {
+                    "type": "datetime",
+                    "namespace": "DCT",
+                    "property": "modified",
+                    "prefix": ""
+                },
+                "date_planned": {
+                    "type": "datetime",
+                    "namespace": "DONL",
+                    "property": "plannedPublicationDate",
+                    "prefix": ""
+                },
+                "identifier": {
+                    "type": "uri",
+                    "namespace": "DONL",
+                    "property": "identifier",
+                    "prefix": ""
+                },
+                "alternate_identifier": {
+                    "type": "uri",
+                    "namespace": "ADMS",
+                    "property": "identifier",
+                    "prefix": ""
+                },
+                "url": {
+                    "type": "uri",
+                    "namespace": "DCAT",
+                    "property": "landingPage",
+                    "prefix": ""
+                },
+                "related_resource": {
+                    "type": "uri",
+                    "namespace": "DCT",
+                    "property": "relation",
+                    "prefix": ""
+                },
+                "source": {
+                    "type": "uri",
+                    "namespace": "DCT",
+                    "property": "source",
+                    "prefix": ""
+                },
+                "has_version": {
+                    "type": "uri",
+                    "namespace": "DCT",
+                    "property": "hasVersion",
+                    "prefix": ""
+                },
+                "is_version_of": {
+                    "type": "uri",
+                    "namespace": "DCT",
+                    "property": "isVersionOf",
+                    "prefix": ""
+                },
+                "documentation": {
+                    "type": "uri",
+                    "namespace": "FOAF",
+                    "property": "page",
+                    "prefix": ""
+                },
+                "provenance": {
+                    "type": "uri",
+                    "namespace": "DCT",
+                    "property": "provenance",
+                    "prefix": ""
+                },
+                "sample": {
+                    "type": "uri",
+                    "namespace": "ADMS",
+                    "property": "sample",
+                    "prefix": ""
+                },
+                "conforms_to": {
+                    "type": "uri",
+                    "namespace": "DCT",
+                    "property": "conformsTo",
+                    "prefix": ""
+                },
+                "metadata_language": {
+                    "type": "resource",
+                    "namespace": "DONL",
+                    "property": "metadataLanguage",
+                    "prefix": "",
+                    "class": {
+                        "namespace": "DONL",
+                        "name": "Language"
+                    }
+                },
+                "language": {
+                    "type": "resource",
+                    "namespace": "DONL",
+                    "property": "language",
+                    "prefix": "",
+                    "class": {
+                        "namespace": "DONL",
+                        "name": "Language"
+                    }
+                },
+                "authority": {
+                    "type": "resource",
+                    "namespace": "DONL",
+                    "property": "authority",
+                    "prefix": "",
+                    "class": {
+                        "namespace": "DONL",
+                        "name": "Organization"
+                    }
+                },
+                "publisher": {
+                    "type": "resource",
+                    "namespace": "DONL",
+                    "property": "publisher",
+                    "prefix": "",
+                    "class": {
+                        "namespace": "DONL",
+                        "name": "Organization"
+                    }
+                },
+                "access_rights": {
+                    "type": "resource",
+                    "namespace": "DONL",
+                    "property": "accessRights",
+                    "prefix": "",
+                    "class": {
+                        "namespace": "DONL",
+                        "name": "OpenbaarheidsNiveau"
+                    }
+                },
+                "dataset_status": {
+                    "type": "resource",
+                    "namespace": "DONL",
+                    "property": "status",
+                    "prefix": "",
+                    "class": {
+                        "namespace": "DONL",
+                        "name": "DatasetStatus"
+                    }
+                },
+                "frequency": {
+                    "type": "resource",
+                    "namespace": "DCT",
+                    "property": "accrualPeriodicity",
+                    "prefix": "",
+                    "class": {
+                        "namespace": "DONL",
+                        "name": "Frequency"
+                    }
+                },
+                "source_catalog": {
+                    "type": "resource",
+                    "namespace": "DONL",
+                    "property": "sourceCatalog",
+                    "prefix": "",
+                    "class": {
+                        "namespace": "DCAT",
+                        "name": "Catalog"
+                    }
+                },
+                "license_id": {
+                    "type": "resource",
+                    "namespace": "DCT",
+                    "property": "license",
+                    "prefix": "",
+                    "class": {
+                        "namespace": "DONL",
+                        "name": "License"
+                    }
+                },
+                "theme": {
+                    "type": "resource",
+                    "namespace": "DCAT",
+                    "property": "theme",
+                    "prefix": "",
+                    "class": {
+                        "namespace": "OVERHEID",
+                        "name": "Thema"
+                    }
+                },
+                "high_value": {
+                    "type": "boolean",
+                    "namespace": "DONL",
+                    "property": "classifiedAs",
+                    "class": {
+                        "namespace": "DONL",
+                        "name": "HighValue"
+                    }
+                },
+                "referentie_data": {
+                    "type": "boolean",
+                    "namespace": "DONL",
+                    "property": "classifiedAs",
+                    "class": {
+                        "namespace": "DONL",
+                        "name": "ReferentieData"
+                    }
+                },
+                "basis_register": {
+                    "type": "boolean",
+                    "namespace": "DONL",
+                    "property": "classifiedAs",
+                    "class": {
+                        "namespace": "DONL",
+                        "name": "Basisregistratie"
+                    }
+                }
+            },
+            "catalogRecord": {
+                "class": {
+                    "namespace": "DCAT",
+                    "name": "CatalogRecord"
+                },
+                "name": {
+                    "type": "literal",
+                    "namespace": "DCT",
+                    "property": "title",
+                    "prefix": ""
+                },
+                "notes": {
+                    "type": "literal",
+                    "namespace": "DCT",
+                    "property": "description",
+                    "prefix": ""
+                },
+                "metadata_created": {
+                    "type": "datetime",
+                    "namespace": "DCT",
+                    "property": "issued",
+                    "prefix": ""
+                },
+                "metadata_modified": {
+                    "type": "datetime",
+                    "namespace": "DCT",
+                    "property": "modified",
+                    "prefix": ""
+                },
+                "changetype": {
+                    "type": "literal",
+                    "namespace": "ADMS",
+                    "property": "status",
+                    "prefix": ""
+                },
+                "metadata_language": {
+                    "type": "resource",
+                    "namespace": "DCT",
+                    "property": "language",
+                    "prefix": "",
+                    "class": {
+                        "namespace": "DONL",
+                        "name": "Language"
+                    }
+                }
+            },
+            "contactPoint": {
+                "namespace": "DCAT",
+                "property": "contactPoint",
+                "class": {
+                    "namespace": "V",
+                    "name": "Kind"
+                },
+                "contact_point_name": {
+                    "type": "literal",
+                    "namespace": "V",
+                    "property": "fn",
+                    "prefix": ""
+                },
+                "contact_point_title": {
+                    "type": "literal",
+                    "namespace": "V",
+                    "property": "title",
+                    "prefix": ""
+                },
+                "contact_point_address": {
+                    "type": "literal",
+                    "namespace": "V",
+                    "property": "adr",
+                    "prefix": ""
+                },
+                "contact_point_phone": {
+                    "type": "literal",
+                    "namespace": "V",
+                    "property": "tel",
+                    "prefix": ""
+                },
+                "contact_point_email": {
+                    "type": "uri",
+                    "namespace": "V",
+                    "property": "email",
+                    "prefix": "mailto:"
+                },
+                "contact_point_website": {
+                    "type": "uri",
+                    "namespace": "V",
+                    "property": "web",
+                    "prefix": ""
+                }
+            },
+            "temporal": {
+                "namespace": "DCT",
+                "property": "temporal",
+                "class": {
+                    "namespace": "DCT",
+                    "name": "PeriodOfTime"
+                },
+                "temporal_start": {
+                    "type": "datetime",
+                    "namespace": "SCHEMA",
+                    "property": "startDate",
+                    "prefix": ""
+                },
+                "temporal_end": {
+                    "type": "datetime",
+                    "namespace": "SCHEMA",
+                    "property": "endDate",
+                    "prefix": ""
+                },
+                "temporal_label": {
+                    "type": "literal",
+                    "namespace": "RDFS",
+                    "property": "label",
+                    "prefix": ""
+                }
+            },
+            "spatial": {
+            },
+            "legalBases": {
+                "namespace": "DONL",
+                "property": "legalBases",
+                "class": {
+                    "namespace": "DONL",
+                    "name": "LegalBases"
+                },
+                "legal_foundation_label": {
+                    "type": "literal",
+                    "namespace": "DONL",
+                    "property": "juriconnectName",
+                    "prefix": ""
+                },
+                "legal_foundation_ref": {
+                    "type": "literal",
+                    "namespace": "DONL",
+                    "property": "juriconnectCode",
+                    "prefix": ""
+                },
+                "legal_foundation_uri": {
+                    "type": "literal",
+                    "namespace": "DONL",
+                    "property": "juriconnectDomain",
+                    "prefix": ""
+                }
+            },
+            "distribution": {
+                "namespace": "DCAT",
+                "property": "distribution",
+                "class": {
+                    "namespace": "DONL",
+                    "name": "Distribution"
+                },
+                "url": {
+                    "type": "uri",
+                    "namespace": "DCAT",
+                    "property": "accessURL",
+                    "prefix": ""
+                },
+                "name": {
+                    "type": "literal",
+                    "namespace": "DCT",
+                    "property": "title",
+                    "prefix": ""
+                },
+                "description": {
+                    "type": "literal",
+                    "namespace": "DCT",
+                    "property": "description",
+                    "prefix": ""
+                },
+                "format": {
+                    "type": "resource",
+                    "namespace": "DCT",
+                    "property": "format",
+                    "prefix": "",
+                    "class": {
+                        "namespace": "DONL",
+                        "name": "Format"
+                    }
+                },
+                "license_id": {
+                    "type": "resource",
+                    "namespace": "DCT",
+                    "property": "license",
+                    "prefix": "",
+                    "class": {
+                        "namespace": "DONL",
+                        "name": "License"
+                    }
+                },
+                "size": {
+                    "type": "number",
+                    "namespace": "DCAT",
+                    "property": "byteSize"
+                },
+                "documentation": {
+                    "type": "uri",
+                    "namespace": "FOAF",
+                    "property": "page",
+                    "prefix": ""
+                },
+                "download_url": {
+                    "type": "uri",
+                    "namespace": "DCAT",
+                    "property": "downloadURL",
+                    "prefix": ""
+                },
+                "metadata_language": {
+                    "type": "resource",
+                    "namespace": "DCT",
+                    "property": "language",
+                    "prefix": "",
+                    "class": {
+                        "namespace": "DONL",
+                        "name": "Language"
+                    }
+                },
+                "linked_schemas": {
+                    "type": "uri",
+                    "namespace": "DCT",
+                    "property": "conformsTo",
+                    "prefix": ""
+                },
+                "mimetype": {
+                    "type": "resource",
+                    "namespace": "DCAT",
+                    "property": "mediaType",
+                    "prefix": "",
+                    "class": {
+                        "namespace": "DONL",
+                        "name": "Mediatype"
+                    }
+                },
+                "created": {
+                    "type": "datetime",
+                    "namespace": "DCT",
+                    "property": "issued",
+                    "prefix": ""
+                },
+                "last_modified": {
+                    "type": "datetime",
+                    "namespace": "DCT",
+                    "property": "modified",
+                    "prefix": ""
+                },
+                "rights": {
+                    "type": "literal",
+                    "namespace": "DCT",
+                    "property": "rights",
+                    "prefix": ""
+                },
+                "status": {
+                    "type": "resource",
+                    "namespace": "ADMS",
+                    "property": "status",
+                    "prefix": "",
+                    "class": {
+                        "namespace": "DONL",
+                        "name": "DistributionStatus"
+                    }
+                }
+            },
+            "checksum": {
+                "namespace": "SPDX",
+                "property": "checksum",
+                "class": {
+                    "namespace": "SPDX",
+                    "name": "Checksum"
+                },
+                "hash": {
+                    "type": "literal",
+                    "namespace": "SPDX",
+                    "property": "checksumValue",
+                    "prefix": ""
+                },
+                "hash_algorithm": {
+                    "type": "literal",
+                    "namespace": "SPDX",
+                    "property": "algorithm",
+                    "prefix": ""
+                }
+            }
         }
-    ],
-    "non_open_licenses": [
-        "http://standaarden.overheid.nl/owms/terms/geslotenlicentie",
-        "http://standaarden.overheid.nl/owms/terms/licentieonbekend"
-    ],
-    "properties_to_remove": [
-        "author",
-        "author_email",
-        "maintainer",
-        "maintainer_email",
-        "license_title",
-        "relationships_as_object",
-        "relationships_as_subject"
-    ],
-    "resource_properties_to_remove": [
-    ]
+    },
+    "properties_to_remove": {
+        "package": [
+            "author",
+            "author_email",
+            "maintainer",
+            "maintainer_email",
+            "relationships_as_object",
+            "relationships_as_subject"
+        ],
+        "resource": [
+        ],
+        "group": [
+        ],
+        "organization": [
+        ],
+        "tag": [
+        ]
+    }
 }
