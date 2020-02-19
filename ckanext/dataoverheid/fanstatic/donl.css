@@ -1,0 +1,51 @@
+body,
+.masthead,
+.site-footer {
+    background: #206b82 !important;
+}
+.homepage {
+    background: #EAEAEA !important;
+}
+[role="main"],
+.main {
+    background: #EAEAEA !important;
+}
+.alert {
+    margin-top: 20px;
+}
+.donl-home {
+    min-height: initial !important;
+    padding: 0 !important;
+}
+.homepage-contents {
+    padding-bottom: 40px !important;
+}
+.homepage-search {
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+}
+.homepage-recent-dl {
+    margin-bottom: 0 !important;
+}
+.donl-search-options a {
+    color: #FFFFFF !important;
+}
+.primary {
+    padding-left: 0;
+    padding-right: 0;
+}
+.page-header {
+    margin-top: 0 !important;
+}
+.package-theme {
+    margin-bottom: 15px;
+}
+.package-show-block {
+    list-style: square;
+}
+.nav-pills {
+    font-weight: 700 !important;
+}
+.font-weight-bold {
+    font-weight: 700;
+}

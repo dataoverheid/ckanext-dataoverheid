@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<schema name="donl_search" version="1.0">
+    <types>
+        <fieldType name="string" class="solr.StrField" sortMissingLast="true" omitNorms="true"/>
+        <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true" omitNorms="true"/>
+        <fieldType name="int" class="solr.IntPointField" docValues="true"/>
+        <fieldType name="float" class="solr.FloatPointField" docValues="true"/>
+        <fieldType name="date" class="solr.DatePointField" docValues="true"/>
+
+        <fieldType name="text" class="solr.TextField" positionIncrementGap="100">
+            <analyzer type="index">
+                <tokenizer class="solr.StandardTokenizerFactory"/>
+                <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="1" generateNumberParts="1"
+                        catenateWords="1" catenateNumbers="1" catenateAll="0" splitOnCaseChange="1"/>
+                <filter class="solr.FlattenGraphFilterFactory"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+                <filter class="solr.ManagedStopFilterFactory" managed="dutch"/>
+                <filter class="solr.SnowballPorterFilterFactory" language="Dutch"/>
+                <filter class="solr.ASCIIFoldingFilterFactory"/>
+            </analyzer>
+            <analyzer type="query">
+                <tokenizer class="solr.StandardTokenizerFactory"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+                <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="1" generateNumberParts="1"
+                        catenateWords="1" catenateNumbers="1" catenateAll="0" splitOnCaseChange="1"/>
+                <filter class="solr.FlattenGraphFilterFactory"/>
+                <filter class="solr.ManagedStopFilterFactory" managed="dutch"/>
+                <filter class="solr.SnowballPorterFilterFactory" language="Dutch"/>
+                <filter class="solr.ASCIIFoldingFilterFactory"/>
+            </analyzer>
+        </fieldType>
+
+        <fieldType name="EdgeNGram" class="solr.TextField" positionIncrementGap="100">
+            <analyzer type="index">
+                <tokenizer class="solr.StandardTokenizerFactory"/>
+                <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="1" generateNumberParts="1"
+                        catenateWords="1" catenateNumbers="1" catenateAll="0" splitOnCaseChange="1"/>
+                <filter class="solr.FlattenGraphFilterFactory"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+                <filter class="solr.ManagedStopFilterFactory" managed="dutch"/>
+                <filter class="solr.SnowballPorterFilterFactory" language="Dutch"/>
+                <filter class="solr.EdgeNGramFilterFactory" minGramSize="4" maxGramSize="25"/>
+                <filter class="solr.ASCIIFoldingFilterFactory"/>
+            </analyzer>
+            <analyzer type="query">
+                <tokenizer class="solr.StandardTokenizerFactory"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+                <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="1" generateNumberParts="1"
+                        catenateWords="1" catenateNumbers="1" catenateAll="0" splitOnCaseChange="1"/>
+                <filter class="solr.FlattenGraphFilterFactory"/>
+                <filter class="solr.ManagedStopFilterFactory" managed="dutch"/>
+                <filter class="solr.SnowballPorterFilterFactory" language="Dutch"/>
+                <filter class="solr.ASCIIFoldingFilterFactory"/>
+            </analyzer>
+        </fieldType>
+
+        <fieldType name="theme_hierarchy" class="solr.TextField" positionIncrementGap="100">
+            <analyzer>
+                <tokenizer class="solr.KeywordTokenizerFactory"/>
+                <filter class="solr.ManagedSynonymGraphFilterFactory" managed="hierarchy_theme"/>
+                <filter class="solr.FlattenGraphFilterFactory"/>
+            </analyzer>
+        </fieldType>
+
+        <fieldType name="uri_label_nl" class="solr.TextField" positionIncrementGap="100">
+            <analyzer type="index">
+                <tokenizer class="solr.KeywordTokenizerFactory"/>
+                <filter class="solr.ManagedSynonymGraphFilterFactory" managed="uri_nl"/>
+                <filter class="solr.FlattenGraphFilterFactory"/>
+                <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="1" generateNumberParts="1"/>
+                <filter class="solr.FlattenGraphFilterFactory"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+                <filter class="solr.ASCIIFoldingFilterFactory"/>
+            </analyzer>
+            <analyzer type="query">
+                <tokenizer class="solr.StandardTokenizerFactory"/>
+                <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="1" generateNumberParts="1"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+                <filter class="solr.ASCIIFoldingFilterFactory"/>
+            </analyzer>
+        </fieldType>
+
+        <fieldType name="uri_label_en" class="solr.TextField" positionIncrementGap="100">
+            <analyzer type="index">
+                <tokenizer class="solr.KeywordTokenizerFactory"/>
+                <filter class="solr.ManagedSynonymGraphFilterFactory" managed="uri_en"/>
+                <filter class="solr.FlattenGraphFilterFactory"/>
+                <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="1" generateNumberParts="1"/>
+                <filter class="solr.FlattenGraphFilterFactory"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+                <filter class="solr.ASCIIFoldingFilterFactory"/>
+            </analyzer>
+            <analyzer type="query">
+                <tokenizer class="solr.StandardTokenizerFactory"/>
+                <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="1" generateNumberParts="1"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+                <filter class="solr.ASCIIFoldingFilterFactory"/>
+            </analyzer>
+        </fieldType>
+
+        <fieldType name="spellcheck" class="solr.TextField" positionIncrementGap="100" multiValued="true">
+            <analyzer>
+                <tokenizer class="solr.StandardTokenizerFactory"/>
+                <filter class="solr.ManagedStopFilterFactory" managed="dutch"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+                <filter class="solr.ASCIIFoldingFilterFactory"/>
+            </analyzer>
+        </fieldType>
+
+    </types>
+
+    <fields>
+        <!-- Solr system fields -->
+        <field name="_version_" type="string" indexed="true" stored="true" multiValued="false"/>
+
+        <!-- System fields -->
+        <field name="sys_id" type="string" indexed="true" stored="true" required="true" multiValued="false"/>
+        <field name="sys_name" type="string" indexed="true" stored="true" multiValued="false"/>
+        <field name="sys_language" type="string" indexed="true" stored="true" multiValued="false"/>
+        <field name="sys_created" type="date" indexed="true" stored="true" multiValued="false"/>
+        <field name="sys_modified" type="date" indexed="true" stored="true" multiValued="false"/>
+        <field name="sys_uri" type="string" indexed="true" stored="true" multiValued="false"/>
+        <field name="sys_type" type="string" indexed="true" stored="true" multiValued="false"/>
+
+        <!-- General fields -->
+        <field name="title" type="EdgeNGram" indexed="true" stored="true" multiValued="false"/>
+        <field name="description" type="text" indexed="true" stored="true" multiValued="false"/>
+        <field name="theme" type="string" indexed="true" stored="true" multiValued="true"/>
+        <field name="authority" type="string" indexed="true" stored="true" multiValued="true"/>
+        <field name="format" type="string" indexed="true" stored="true" multiValued="true"/>
+        <field name="url" type="string" indexed="true" stored="true" multiValued="true"/>
+        <field name="keyword" type="text" indexed="true" stored="true" multiValued="true"/>
+        <field name="contact_point" type="text" indexed="true" stored="true" multiValued="true"/>
+        <field name="status" type="string" indexed="true" stored="true" multiValued="false"/>
+        <field name="publisher" type="string" indexed="true" stored="true" multiValued="false"/>
+        <field name="catalog" type="string" indexed="true" stored="true" multiValued="false"/>
+        <field name="access_rights" type="string" indexed="true" stored="true" multiValued="false"/>
+        <field name="spatial" type="string" indexed="true" stored="true" multiValued="true"/>
+        <field name="dates" type="date" indexed="true" stored="true" multiValued="true"/>
+        <field name="frequency" type="string" indexed="true" stored="true" multiValued="false"/>
+        <field name="license" type="string" indexed="true" stored="true" multiValued="false"/>
+        <field name="temporal" type="date" indexed="true" stored="true" multiValued="true"/>
+        <field name="temporal_label" type="string" indexed="true" stored="true" multiValued="false"/>
+        <field name="size" type="int" indexed="true" stored="true" multiValued="true"/>
+        <field name="mediatype" type="string" indexed="true" stored="true" multiValued="true"/>
+        <field name="checksum" type="string" indexed="true" stored="true" multiValued="true"/>
+        <field name="legal" type="string" indexed="true" stored="true" multiValued="true"/>
+        <field name="kind" type="string" indexed="true" stored="true" multiValued="false"/>
+
+        <!-- Ghost field as copy field -->
+        <field name="language" type="string" indexed="false" stored="false" multiValued="false"/>
+
+        <!-- Relation fields -->
+        <field name="relation_dataset" type="string" indexed="true" stored="true" multiValued="true"/>
+        <field name="relation_community" type="string" indexed="true" stored="true" multiValued="true"/>
+        <field name="relation_group" type="string" indexed="true" stored="true" multiValued="true"/>
+        <field name="relation_datarequest" type="string" indexed="true" stored="true" multiValued="true"/>
+        <field name="relation_datamodel" type="string" indexed="true" stored="true" multiValued="true"/>
+        <field name="relation_appliance" type="string" indexed="true" stored="true" multiValued="true"/>
+        <field name="relation_organization" type="string" indexed="true" stored="true" multiValued="true"/>
+        <field name="relation_catalog" type="string" indexed="true" stored="true" multiValued="true"/>
+        <field name="relation_news" type="string" indexed="true" stored="true" multiValued="true"/>
+        <field name="relation_event" type="string" indexed="true" stored="true" multiValued="true"/>
+        <field name="relation_support" type="string" indexed="true" stored="true" multiValued="true"/>
+        <field name="relation_message" type="string" indexed="true" stored="true" multiValued="true"/>
+        <field name="relation_story" type="string" indexed="true" stored="true" multiValued="true"/>
+        <field name="relation_person" type="string" indexed="true" stored="true" multiValued="true"/>
+        <field name="relation_statistic" type="string" indexed="true" stored="true" multiValued="true"/>
+        <field name="relation" type="string" indexed="true" stored="true" multiValued="true"/>
+        <field name="related_to" type="string" indexed="true" stored="true" multiValued="true"/>
+
+        <!-- Dataset fields -->
+        <field name="classification" type="string" indexed="true" stored="true" multiValued="true"/>
+
+        <!-- Datarequest fields -->
+        <field name="phase" type="text" indexed="true" stored="true" multiValued="true"/>
+
+        <!-- Appliance fields -->
+        <field name="appliance_type" type="string" indexed="true" stored="true" multiValued="false"/>
+        <field name="authority_type" type="string" indexed="true" stored="true" multiValued="false"/>
+
+        <!-- URI fields -->
+        <field name="uri_synonym_nl" type="uri_label_nl" indexed="true" stored="true" multiValued="true"/>
+        <field name="uri_synonym_en" type="uri_label_en" indexed="true" stored="true" multiValued="true"/>
+
+        <!-- Spellcheck field -->
+        <field name="spellcheck" type="spellcheck" indexed="true" stored="true" multiValued="true"/>
+
+        <!-- Search field -->
+        <field name="text" type="text" indexed="true" stored="false" multiValued="true"/>
+        <field name="title_autocomplete" type="text" indexed="true" stored="true" multiValued="false"/>
+
+        <!--  Search Facets  -->
+        <field name="facet_authority" type="string" indexed="true" stored="true" multiValued="true"/>
+        <field name="facet_authority_type" type="string" indexed="true" stored="true" multiValued="true"/>
+        <field name="facet_access_rights" type="string" indexed="true" stored="true" multiValued="false"/>
+        <field name="facet_frequency" type="string" indexed="true" stored="true" multiValued="false"/>
+        <field name="facet_license" type="string" indexed="true" stored="true" multiValued="false"/>
+        <field name="facet_sys_language" type="string" indexed="true" stored="true" multiValued="false"/>
+        <field name="facet_status" type="string" indexed="true" stored="true" multiValued="false"/>
+        <field name="facet_theme" type="theme_hierarchy" indexed="true" stored="true" multiValued="true"/>
+        <field name="facet_classification" type="string" indexed="true" stored="true" multiValued="true"/>
+        <field name="facet_format" type="string" indexed="true" stored="true" multiValued="true"/>
+        <field name="facet_keyword" type="string" indexed="true" stored="true" multiValued="true"/>
+        <field name="facet_group" type="string" indexed="true" stored="true" multiValued="true"/>
+        <field name="facet_community" type="string" indexed="true" stored="true" multiValued="true"/>
+        <field name="facet_catalog" type="string" indexed="true" stored="true" multiValued="true"/>
+        <field name="facet_sys_type" type="string" indexed="true" stored="true" multiValued="false"/>
+        <field name="facet_related_to" type="string" indexed="true" stored="true" multiValued="true"/>
+        <field name="facet_kind" type="string" indexed="true" stored="true" multiValued="false"/>
+        <field name="facet_phase" type="string" indexed="true" stored="true" multiValued="false"/>
+        <field name="facet_appliance_type" type="string" indexed="true" stored="true" multiValued="false"/>
+    </fields>
+
+    <uniqueKey>sys_id</uniqueKey>
+
+    <copyField source="authority" dest="relation_organization"/>
+    <copyField source="publisher" dest="relation_organization"/>
+
+    <!-- Copy to facet fields -->
+    <copyField source="authority" dest="facet_authority"/>
+    <copyField source="authority_type" dest="facet_authority_type"/>
+    <copyField source="access_rights" dest="facet_access_rights"/>
+    <copyField source="frequency" dest="facet_frequency"/>
+    <copyField source="license" dest="facet_license"/>
+    <copyField source="sys_language" dest="facet_sys_language"/>
+    <copyField source="status" dest="facet_status"/>
+    <copyField source="theme" dest="facet_theme"/>
+    <copyField source="classification" dest="facet_classification"/>
+    <copyField source="format" dest="facet_format"/>
+    <copyField source="keyword" dest="facet_keyword"/>
+    <copyField source="relation_group" dest="facet_group"/>
+    <copyField source="relation_community" dest="facet_community"/>
+    <copyField source="relation_catalog" dest="facet_catalog"/>
+    <copyField source="sys_type" dest="facet_sys_type"/>
+    <copyField source="related_to" dest="facet_related_to"/>
+    <copyField source="kind" dest="facet_kind"/>
+    <copyField source="phase" dest="facet_phase"/>
+    <copyField source="appliance_type" dest="facet_appliance_type"/>
+
+    <!-- Catch all relation field -->
+    <copyField source="relation_dataset" dest="relation"/>
+    <copyField source="relation_community" dest="relation"/>
+    <copyField source="relation_group" dest="relation"/>
+    <copyField source="relation_datarequest" dest="relation"/>
+    <copyField source="relation_datamodel" dest="relation"/>
+    <copyField source="relation_appliance" dest="relation"/>
+    <copyField source="relation_organization" dest="relation"/>
+    <copyField source="relation_catalog" dest="relation"/>
+    <copyField source="relation_news" dest="relation"/>
+    <copyField source="relation_event" dest="relation"/>
+    <copyField source="relation_support" dest="relation"/>
+    <copyField source="relation_message" dest="relation"/>
+    <copyField source="relation_story" dest="relation"/>
+    <copyField source="relation_person" dest="relation"/>
+    <copyField source="relation_statistic" dest="relation"/>
+
+    <!-- Copy to URI synonym field -->
+    <copyField source="theme" dest="uri_synonym_nl"/>
+    <copyField source="theme" dest="uri_synonym_en"/>
+    <copyField source="authority" dest="uri_synonym_nl"/>
+    <copyField source="authority" dest="uri_synonym_en"/>
+    <copyField source="format" dest="uri_synonym_nl"/>
+    <copyField source="format" dest="uri_synonym_en"/>
+    <copyField source="status" dest="uri_synonym_nl"/>
+    <copyField source="status" dest="uri_synonym_en"/>
+    <copyField source="publisher" dest="uri_synonym_nl"/>
+    <copyField source="publisher" dest="uri_synonym_en"/>
+    <copyField source="catalog" dest="uri_synonym_nl"/>
+    <copyField source="catalog" dest="uri_synonym_en"/>
+    <copyField source="access_rights" dest="uri_synonym_nl"/>
+    <copyField source="access_rights" dest="uri_synonym_en"/>
+    <copyField source="spatial" dest="uri_synonym_nl"/>
+    <copyField source="spatial" dest="uri_synonym_en"/>
+    <copyField source="frequency" dest="uri_synonym_nl"/>
+    <copyField source="frequency" dest="uri_synonym_en"/>
+    <copyField source="license" dest="uri_synonym_nl"/>
+    <copyField source="license" dest="uri_synonym_en"/>
+    <copyField source="mediatype" dest="uri_synonym_nl"/>
+    <copyField source="mediatype" dest="uri_synonym_en"/>
+    <copyField source="language" dest="uri_synonym_nl"/>
+    <copyField source="language" dest="uri_synonym_en"/>
+    <copyField source="relation_organization" dest="uri_synonym_nl"/>
+    <copyField source="relation_organization" dest="uri_synonym_en"/>
+
+    <!-- Copy to search field -->
+    <copyField source="title" dest="text"/>
+    <copyField source="title" dest="title_autocomplete"/>
+    <copyField source="description" dest="text"/>
+    <copyField source="url" dest="text"/>
+    <copyField source="keyword" dest="text"/>
+    <copyField source="contact_point" dest="text"/>
+    <copyField source="classification" dest="text"/>
+    <copyField source="phase" dest="text"/>
+
+    <!-- Copy  to spellcheck field -->
+    <copyField source="title" dest="spellcheck"/>
+    <copyField source="description" dest="spellcheck"/>
+    <copyField source="keyword" dest="spellcheck"/>
+
+</schema>

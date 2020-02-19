@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<schema name="dataset_suggester" version="1.0">
+    <types>
+        <fieldType name="string" class="solr.StrField" sortMissingLast="true" omitNorms="true"/>
+        <fieldType name="long" class="solr.LongPointField" docValues="true"/>
+
+        <fieldType class="solr.TextField" name="text_suggest" positionIncrementGap="100">
+            <analyzer>
+                <tokenizer class="solr.StandardTokenizerFactory"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+                <filter class="solr.ASCIIFoldingFilterFactory" preserveOriginal="false"/>
+            </analyzer>
+        </fieldType>
+    </types>
+
+    <fields>
+        <field name="_version_" type="string" indexed="true" stored="true" multiValued="false"/>
+        <field name="id" type="string" indexed="true" multiValued="false" required="true" stored="true"/>
+
+        <!-- Suggester fields -->
+        <field name="weight" type="long" indexed="true" stored="true" multiValued="false"/>
+        <field name="payload" type="string" indexed="true" stored="true" multiValued="false"/>
+
+        <!-- Entity suggestions -->
+        <field name="community" type="text_suggest" indexed="true" stored="true" multiValued="true"/>
+        <field name="datarequest" type="text_suggest" indexed="true" stored="true" multiValued="true"/>
+        <field name="dataset" type="text_suggest" indexed="true" stored="true" multiValued="true"/>
+        <field name="group" type="text_suggest" indexed="true" stored="true" multiValued="true"/>
+        <field name="organization" type="text_suggest" indexed="true" stored="true" multiValued="true"/>
+
+        <!-- Theme suggestions -->
+        <field name="theme" type="text_suggest" indexed="true" stored="true" multiValued="true"/>
+
+        <!-- Context only fields -->
+        <field name="type" type="string" indexed="true" stored="true" multiValued="false"/>
+        <field name="language" type="string" indexed="true" stored="true" multiValued="true"/>
+
+        <field name="context" type="string" indexed="true" stored="true" multiValued="true"/>
+    </fields>
+
+    <!-- Copy to context field -->
+    <copyField source="type" dest="context"/>
+    <copyField source="language" dest="context"/>
+    <copyField source="community" dest="context"/>
+
+    <uniqueKey>id</uniqueKey>
+</schema>
