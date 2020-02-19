@@ -12,4 +12,14 @@ def wildcard_search(rows=0):
 
     :return: dict, The search results
     """
-    return tk.get_action('package_search')({}, {'q': '*:*', 'rows': rows})
+    return tk.get_action('package_search')({}, {
+        'q': '*:*',
+        'facet': True,
+        'facet.field': [
+            'authority',
+            'source_catalog'
+        ],
+        'facet.mincount': 1,
+        'facet.limit': -1,
+        'rows': rows
+    })

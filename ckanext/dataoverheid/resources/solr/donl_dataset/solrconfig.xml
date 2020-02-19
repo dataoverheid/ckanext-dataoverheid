@@ -2,24 +2,56 @@
 <config>
     <abortOnConfigurationError>${solr.abortOnConfigurationError:true}</abortOnConfigurationError>
     <luceneMatchVersion>LUCENE_82</luceneMatchVersion>
-    <dataDir>/var/solr/data/donl_dataset/data</dataDir>
 
-    <directoryFactory name="DirectoryFactory" class="${solr.directoryFactory:solr.StandardDirectoryFactory}" />
-    <schemaFactory class="ClassicIndexSchemaFactory" />
+    <directoryFactory name="DirectoryFactory" class="${solr.directoryFactory:solr.StandardDirectoryFactory}"/>
+    <schemaFactory class="ClassicIndexSchemaFactory"/>
 
-    <updateHandler class="solr.DirectUpdateHandler2" />
+    <updateHandler class="solr.DirectUpdateHandler2">
+        <updateLog>
+            <str name="dir">${solr.ulog.dir:}</str>
+            <int name="numRecordsToKeep">500</int>
+            <int name="maxNumLogsToKeep">20</int>
+            <int name="numVersionBuckets">65536</int>
+        </updateLog>
+    </updateHandler>
+
+    <indexConfig>
+        <ramBufferSizeMB>100</ramBufferSizeMB>
+        <maxBufferedDocs>1000</maxBufferedDocs>
+        <useCompoundFile>false</useCompoundFile>
+
+        <mergePolicyFactory class="org.apache.solr.index.TieredMergePolicyFactory">
+          <int name="maxMergeAtOnce">10</int>
+          <int name="segmentsPerTier">10</int>
+        </mergePolicyFactory>
+
+        <mergeScheduler class="org.apache.lucene.index.ConcurrentMergeScheduler"/>
+        <mergedSegmentWarmer class="org.apache.lucene.index.SimpleMergedSegmentWarmer"/>
+
+        <lockType>native</lockType>
+        <writeLockTimeout>1000</writeLockTimeout>
+        <reopenReaders>true</reopenReaders>
+
+        <deletionPolicy class="solr.SolrDeletionPolicy">
+          <str name="maxCommitsToKeep">1</str>
+          <str name="maxOptimizedCommitsToKeep">0</str>
+          <str name="maxCommitAge">1DAY</str>
+        </deletionPolicy>
+
+        <infoStream>false</infoStream>
+    </indexConfig>
 
     <query>
         <maxBooleanClauses>1024</maxBooleanClauses>
-        <filterCache class="solr.FastLRUCache" size="512" initialSize="512" autowarmCount="0" />
-        <queryResultCache class="solr.LRUCache" size="512" initialSize="512" autowarmCount="0" />
-        <documentCache class="solr.LRUCache" size="512" initialSize="512" autowarmCount="0" />
+        <filterCache class="solr.FastLRUCache" size="512" initialSize="512" autowarmCount="0"/>
+        <queryResultCache class="solr.LRUCache" size="512" initialSize="512" autowarmCount="0"/>
+        <documentCache class="solr.LRUCache" size="512" initialSize="512" autowarmCount="0"/>
         <enableLazyFieldLoading>true</enableLazyFieldLoading>
         <queryResultWindowSize>20</queryResultWindowSize>
         <queryResultMaxDocsCached>200</queryResultMaxDocsCached>
 
         <listener event="newSearcher" class="solr.QuerySenderListener">
-            <arr name="queries" />
+            <arr name="queries"/>
         </listener>
         <listener event="firstSearcher" class="solr.QuerySenderListener">
             <arr name="queries">
@@ -34,19 +66,9 @@
     </query>
 
     <requestDispatcher>
-        <requestParsers enableRemoteStreaming="true" multipartUploadLimitInKB="2048000" />
-        <httpCaching never304="true" />
+        <requestParsers enableRemoteStreaming="true" multipartUploadLimitInKB="2048000"/>
+        <httpCaching never304="true"/>
     </requestDispatcher>
-
-	<requestHandler name="/data-request-suggestions" class="solr.SearchHandler">
-        <lst name="defaults">
-            <str name="echoParams">explicit</str>
-            <int name="rows">5</int>
-            <str name="df">text</str>
-            <str name="defType">edismax</str>
-			<str name="fl">name,title,notes,theme</str>
-		</lst>
-	</requestHandler>
 
     <requestHandler name="/select" class="solr.SearchHandler">
         <lst name="defaults">
@@ -55,67 +77,22 @@
             <int name="rows">100</int>
             <str name="df">text</str>
             <str name="defType">edismax</str>
-            <str name="facet">on</str>
-            <str name="facet.limit">50</str>
-            <str name="facet.mincount">1</str>
-            <str name="f.facet_authority.facet.limit">-1</str>
-            <str name="f.facet_theme.facet.limit">-1</str>
-            <str name="f.facet_res_format.facet.limit">-1</str>
-            <str name="spellcheck">true</str>
-            <str name="spellcheck.collate">true</str>
-            <str name="spellcheck.count">10</str>
-            <str name="spellcheck.dictionary">spellcheck</str>
-            <str name="spellcheck.extendedResults">true</str>
-            <str name="spellcheck.maxResultsForSuggest">0</str>
-            <str name="spellcheck.alternativeTermCount">5</str>
-        </lst>
-
-        <lst name="appends">
-            <str name="facet.field">facet_authority</str>
-            <str name="facet.field">facet_publisher</str>
-            <str name="facet.field">facet_access_rights</str>
-            <str name="facet.field">facet_frequency</str>
-            <str name="facet.field">facet_license_id</str>
-            <str name="facet.field">facet_metadata_language</str>
-            <str name="facet.field">facet_source_catalog</str>
-            <str name="facet.field">facet_dataset_status</str>
-            <str name="facet.field">facet_theme</str>
-            <str name="facet.field">facet_referentie_data</str>
-            <str name="facet.field">facet_high_value</str>
-            <str name="facet.field">facet_basis_register</str>
-            <str name="facet.field">facet_communities</str>
-            <str name="facet.field">facet_res_format</str>
-			<str name="facet.field">facet_tags</str>
-            <str name="facet.field">facet_national_coverage</str>
-            <str name="facet.field">facet_groups</str>
         </lst>
 
         <lst name="invariants">
             <str name="defType">edismax</str>
-            <str name="qf">text title_text uri_label_nl uri_label_en</str>
+            <str name="qf">text</str>
             <str name="mm">100%</str>
-            <arr name="last-components">
-                <str>spellcheck</str>
-            </arr>
         </lst>
     </requestHandler>
 
-    <requestHandler name="/mlt" class="solr.MoreLikeThisHandler">
-        <lst name="defaults">
-           <str name="mlt.fl">title, description, tags, authority, theme</str>
-           <str name="mlt.mintf">1</str>
-           <str name="mlt.mindf">1</str>
-        </lst>
-    </requestHandler>
+    <requestHandler name="/update/json" class="solr.JsonUpdateRequestHandler" startup="lazy"/>
 
-    <requestHandler name="/update/json" class="solr.JsonUpdateRequestHandler" startup="lazy" />
+    <requestHandler name="/analysis/field" startup="lazy" class="solr.FieldAnalysisRequestHandler"/>
 
-    <requestHandler name="/analysis/field" startup="lazy" class="solr.FieldAnalysisRequestHandler" />
-
-    <requestHandler name="/analysis/document" class="solr.DocumentAnalysisRequestHandler" startup="lazy" />
+    <requestHandler name="/analysis/document" class="solr.DocumentAnalysisRequestHandler" startup="lazy"/>
 
     <requestHandler name="/admin/ping" class="solr.PingRequestHandler">
-        <str name="healthcheckFile">/var/solr/data/donl_dataset/conf/core-available.txt</str>
         <lst name="invariants">
             <str name="qt">/select</str>
             <str name="q">*:*</str>
@@ -141,17 +118,10 @@
         </arr>
     </requestHandler>
 
-    <searchComponent name="spellcheck" class="solr.SpellCheckComponent">
-        <lst name="spellchecker">
-            <str name="name">spellcheck</str>
-            <str name="field">spellcheck</str>
-            <str name="classname">solr.DirectSolrSpellChecker</str>
-        </lst>
-    </searchComponent>
+    <searchComponent name="tvComponent" class="solr.TermVectorComponent"/>
 
-    <searchComponent name="tvComponent" class="solr.TermVectorComponent" />
-
-    <searchComponent name="clustering" enable="${solr.clustering.enabled:false}" class="solr.clustering.ClusteringComponent">
+    <searchComponent name="clustering" enable="${solr.clustering.enabled:false}"
+                     class="solr.clustering.ClusteringComponent">
         <lst name="engine">
             <str name="name">default</str>
             <str name="carrot.algorithm">org.carrot2.clustering.lingo.LingoClusteringAlgorithm</str>
@@ -159,17 +129,15 @@
             <str name="carrot.lexicalResourcesDir">clustering/carrot2</str>
             <str name="MultilingualClustering.defaultLanguage">ENGLISH</str>
         </lst>
-            <lst name="engine">
+        <lst name="engine">
             <str name="name">stc</str>
             <str name="carrot.algorithm">org.carrot2.clustering.stc.STCClusteringAlgorithm</str>
         </lst>
     </searchComponent>
 
-    <searchComponent name="terms" class="solr.TermsComponent" />
+    <searchComponent name="terms" class="solr.TermsComponent"/>
 
-    <queryResponseWriter name="json" class="solr.JSONResponseWriter">
-        <str name="content-type">text/plain; charset=UTF-8</str>
-    </queryResponseWriter>
+    <queryResponseWriter name="json" class="solr.JSONResponseWriter" />
 
     <admin>
         <defaultQuery>*:*</defaultQuery>

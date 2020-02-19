@@ -1,33 +1,88 @@
 {
     "solr": {
         "host": "http://127.0.0.1:8983/solr",
-        "authorization_file": "/usr/lib/ckan/donl_dataset/authorization.json",
-        "actions": {
-            "update": "update?commit=true",
-            "reload": "admin/cores?action=RELOAD",
-            "build_suggestions": "suggest?suggest.build=true"
-        },
-        "cores": {
-            "dataset": {
-                "name": "donl_dataset",
-                "conf": "ckanext/dataoverheid/resources/solr/donl_dataset/"
-            },
-            "suggester": {
-                "name": "donl_suggester",
-                "conf": "ckanext/dataoverheid/resources/solr/donl_suggester/",
-                "vocabularies": {
-                    "DONL:Organization": {
-                        "facet": "facet_authority",
-                        "suggester_field": "authority"
-                    },
-                    "Overheid:Taxonomiebeleidsagenda": {
-                        "facet": "facet_theme",
-                        "suggester_field": "theme"
-                    }
-                }
+        "mappings": {
+            "donl_dataset_to_donl_search": {
+                "id": "sys_id",
+                "name": "sys_name",
+                "metadata_language": "sys_language",
+                "language": "language",
+                "metadata_created": "sys_created",
+                "metadata_modified": "sys_modified",
+                "identifier": "sys_uri",
+                "title": "title",
+                "notes": "description",
+                "tags": "keyword",
+                "theme": "theme",
+                "modified": "text",
+                "authority": "authority",
+                "publisher": "publisher",
+                "source_catalog": "relation_catalog",
+                "contact_point_name": "contact_point",
+                "contact_point_title": "contact_point",
+                "contact_point_address": "contact_point",
+                "contact_point_email": "contact_point",
+                "contact_point_website": "contact_point",
+                "contact_point_phone": "contact_point",
+                "access_rights": "access_rights",
+                "dataset_status": "status",
+                "url": "url",
+                "spatial_scheme": "spatial",
+                "spatial_value": "spatial",
+                "temporal_label": "temporal_label",
+                "temporal_start": "temporal",
+                "temporal_end": "temporal",
+                "conforms_to": "url",
+                "alternate_identifier": "url",
+                "related_resource": "url",
+                "source": "url",
+                "has_version": "url",
+                "is_version_of": "url",
+                "version": "text",
+                "version_notes": "text",
+                "legal_foundation_uri": "legal",
+                "legal_foundation_ref": "legal",
+                "legal_foundation_label": "legal",
+                "date_planned": "dates",
+                "documentation": "url",
+                "frequency": "frequency",
+                "license_id": "license",
+                "provenance": "url",
+                "sample": "url",
+                "high_value": "classification",
+                "basis_register": "classification",
+                "referentie_data": "classification",
+                "national_coverage": "classification",
+                "download_url": "url",
+                "res_format": "format",
+                "release_date": "dates",
+                "modification_date": "dates",
+                "size": "size",
+                "media_type": "mediatype",
+                "linked_schemas": "url",
+                "hash": "checksum",
+                "hash_algorithm": "checksum",
+                "description": "text",
+                "rights": "text",
+                "communities": "relation_community"
             }
         },
-        "organizations_location": "ckanext/dataoverheid/resources/vocabularies/donl_organization.json"
+        "has_relations": {
+            "organization": {
+                "dataset": "authority",
+                "datarequest": "authority",
+                "appliance": "authority"
+            }
+        },
+        "relations": {
+            "dataset": {
+                "group": {
+                    "from": "relation_dataset",
+                    "match": "sys_uri",
+                    "to": "relation_group"
+                }
+            }
+        }
     },
     "validation": {
         "vocabulary_base_path": "ckanext/dataoverheid/resources/vocabularies",
@@ -105,22 +160,55 @@
         "taxonomies": {
             "DONL:Communities": {
                 "local": "donl_communities.json",
-                "online": "https://data.overheid.nl/service/waardelijsten/donl_communities"
+                "online": "http://data.overheid.nl/service/waardelijsten/donl_communities"
             }
         },
         "communities": [
             {
                 "uri": "https://data.overheid.nl/communities/ministerie-van-infrastructuur-en-waterstaat",
-                "authority": [
-                    "http://standaarden.overheid.nl/owms/terms/minienw",
-                    "http://standaarden.overheid.nl/owms/terms/Rijkswaterstaat",
-                    "http://standaarden.overheid.nl/owms/terms/Inspectie_Leefomgeving_en_Transport",
-                    "http://standaarden.overheid.nl/owms/terms/pbl",
-                    "http://standaarden.overheid.nl/owms/terms/Koninklijk_Nederlands_Meteorologisch_Instituut",
-                    "http://standaarden.overheid.nl/owms/terms/RDW_(Dienst_Wegverkeer)",
-                    "http://standaarden.overheid.nl/owms/terms/CBR",
-                    "http://data.overheid.nl/organisatie/prorail"
-                ]
+                "rules": {
+                    "authority": [
+                        "http://standaarden.overheid.nl/owms/terms/minienw",
+                        "http://standaarden.overheid.nl/owms/terms/Rijkswaterstaat",
+                        "http://standaarden.overheid.nl/owms/terms/Inspectie_Leefomgeving_en_Transport",
+                        "http://standaarden.overheid.nl/owms/terms/pbl",
+                        "http://standaarden.overheid.nl/owms/terms/Koninklijk_Nederlands_Meteorologisch_Instituut",
+                        "http://standaarden.overheid.nl/owms/terms/RDW_(Dienst_Wegverkeer)",
+                        "http://standaarden.overheid.nl/owms/terms/CBR",
+                        "http://data.overheid.nl/organisatie/prorail"
+                    ]
+                }
+            },
+            {
+                "uri": "https://data.overheid.nl/communities/mobiliteit",
+                "rules": {
+                    "theme": [
+                        "http://standaarden.overheid.nl/owms/terms/Verkeer_(thema)",
+                        "http://standaarden.overheid.nl/owms/terms/Spoor",
+                        "http://standaarden.overheid.nl/owms/terms/Weg_(thema)",
+                        "http://standaarden.overheid.nl/owms/terms/Luchtvaart"
+                    ]
+                }
+            },
+            {
+                "uri": "https://data.overheid.nl/communities/onderwijs",
+                "rules": {
+                    "authority": [
+                        "http://standaarden.overheid.nl/owms/terms/Ministerie_van_Onderwijs,_Cultuur_en_Wetenschap",
+                        "http://standaarden.overheid.nl/owms/terms/Dienst_Uitvoering_Onderwijs",
+                        "http://standaarden.overheid.nl/owms/terms/Inspectie_van_het_Onderwijs",
+                        "http://standaarden.overheid.nl/owms/terms/sbb"
+                    ],
+                    "theme": [
+                        "http://standaarden.overheid.nl/owms/terms/Onderwijs_en_wetenschap"
+                    ]
+                }
+            },
+            {
+                "uri": "https://data.overheid.nl/communities/basisregistraties",
+                "rules": {
+                    "basis_register": true
+                }
             }
         ],
         "non_open_licenses": [

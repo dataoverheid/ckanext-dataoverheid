@@ -323,18 +323,23 @@ def extract_communities(key, data, errors, context):
 
     :return: void
     """
-    if ('communities',) in data and data.get(('communities',)):
-        return
-
-    if not ('authority',) in data:
-        return
-
     data[('communities',)] = []
     errors[('communities',)] = []
-    authority = data.get(('authority',), None)
 
-    [data[('communities',)].append(community['uri']) for community in get_validation_configuration()['communities']
-     if authority and authority in community['authority']]
+    for community in get_validation_configuration()['communities']:
+        [data[('communities',)].append(community['uri']) for prop in community['rules'] if (prop,) in data
+         and isinstance(data[(prop,)], list) and isinstance(community['rules'][prop], list)
+         and any(prop_value in community['rules'][prop] for prop_value in data.get((prop,)))]
+
+        [data[('communities',)].append(community['uri']) for prop in community['rules'] if (prop,) in data
+         and isinstance(data[(prop,)], basestring) and isinstance(community['rules'][prop], list)
+         and data.get((prop,)) in community['rules'][prop]]
+
+        [data[('communities',)].append(community['uri']) for prop in community['rules'] if (prop,) in data
+         and isinstance(data[(prop,)], bool) and isinstance(community['rules'][prop], bool)
+         and data.get((prop,)) == community['rules'][prop]]
+
+    data[('communities',)] = list(set(data[('communities',)]))
 
     return
 

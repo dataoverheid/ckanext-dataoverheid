@@ -1,124 +1,47 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <schema name="ckan" version="2.8">
     <types>
-        <fieldType name="string" class="solr.StrField" sortMissingLast="true" omitNorms="true" />
-        <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true" omitNorms="true" />
-        <fieldType name="int" class="solr.IntPointField" docValues="true" />
-        <fieldType name="float" class="solr.FloatPointField" docValues="true" />
-        <fieldType name="date" class="solr.DatePointField" docValues="true" />
+        <fieldType name="string" class="solr.StrField" sortMissingLast="true" omitNorms="true"/>
+        <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true" omitNorms="true"/>
+        <fieldType name="int" class="solr.IntPointField" docValues="true"/>
+        <fieldType name="float" class="solr.FloatPointField" docValues="true"/>
+        <fieldType name="date" class="solr.DatePointField" docValues="true"/>
 
         <fieldType name="text" class="solr.TextField" positionIncrementGap="100">
             <analyzer type="index">
                 <tokenizer class="solr.StandardTokenizerFactory"/>
-                <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="1" catenateNumbers="1" catenateAll="0" splitOnCaseChange="1"/>
+                <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="1" generateNumberParts="1"
+                        catenateWords="1" catenateNumbers="1" catenateAll="0" splitOnCaseChange="1"/>
                 <filter class="solr.FlattenGraphFilterFactory"/>
                 <filter class="solr.LowerCaseFilterFactory"/>
-                <filter class="solr.StopFilterFactory" format="snowball" words="lang/stopwords_nl.txt" ignoreCase="true"/>
-                <filter class="solr.StemmerOverrideFilterFactory" dictionary="lang/stemdict_nl.txt" ignoreCase="false"/>
                 <filter class="solr.SnowballPorterFilterFactory" language="Dutch"/>
                 <filter class="solr.ASCIIFoldingFilterFactory"/>
             </analyzer>
             <analyzer type="query">
                 <tokenizer class="solr.StandardTokenizerFactory"/>
                 <filter class="solr.LowerCaseFilterFactory"/>
-                <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="1" catenateNumbers="1" catenateAll="0" splitOnCaseChange="1"/>
+                <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="1" generateNumberParts="1"
+                        catenateWords="1" catenateNumbers="1" catenateAll="0" splitOnCaseChange="1"/>
                 <filter class="solr.FlattenGraphFilterFactory"/>
-                <filter class="solr.StopFilterFactory" format="snowball" words="lang/stopwords_nl.txt" ignoreCase="true"/>
-                <filter class="solr.StemmerOverrideFilterFactory" dictionary="lang/stemdict_nl.txt" ignoreCase="false"/>
                 <filter class="solr.SnowballPorterFilterFactory" language="Dutch"/>
                 <filter class="solr.ASCIIFoldingFilterFactory"/>
-            </analyzer>
-        </fieldType>
-
-        <fieldType name="text_title" class="solr.TextField" positionIncrementGap="100">
-            <analyzer type="index">
-                <tokenizer class="solr.StandardTokenizerFactory"/>
-                <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="1" catenateNumbers="1" catenateAll="0" splitOnCaseChange="1"/>
-                <filter class="solr.FlattenGraphFilterFactory"/>
-                <filter class="solr.LowerCaseFilterFactory"/>
-                <filter class="solr.StopFilterFactory" format="snowball" words="lang/stopwords_nl.txt" ignoreCase="true"/>
-                <filter class="solr.StemmerOverrideFilterFactory" dictionary="lang/stemdict_nl.txt" ignoreCase="false"/>
-                <filter class="solr.SnowballPorterFilterFactory" language="Dutch"/>
-                <filter class="solr.EdgeNGramFilterFactory" minGramSize="4" maxGramSize="25"/>
-                <filter class="solr.ASCIIFoldingFilterFactory"/>
-            </analyzer>
-            <analyzer type="query">
-                <tokenizer class="solr.StandardTokenizerFactory"/>
-                <filter class="solr.LowerCaseFilterFactory"/>
-                <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="1" catenateNumbers="1" catenateAll="0" splitOnCaseChange="1"/>
-                <filter class="solr.FlattenGraphFilterFactory"/>
-                <filter class="solr.StopFilterFactory" format="snowball" words="lang/stopwords_nl.txt" ignoreCase="true"/>
-                <filter class="solr.StemmerOverrideFilterFactory" dictionary="lang/stemdict_nl.txt" ignoreCase="false"/>
-                <filter class="solr.SnowballPorterFilterFactory" language="Dutch"/>
-                <filter class="solr.ASCIIFoldingFilterFactory"/>
-            </analyzer>
-        </fieldType>
-
-        <fieldType name="theme_hierarchy" class="solr.TextField" positionIncrementGap="100">
-            <analyzer>
-                <tokenizer class="solr.KeywordTokenizerFactory"/>
-                <filter class="solr.SynonymGraphFilterFactory" synonyms="lang/synonyms_hierarchy_theme.txt" ignoreCase="false" expand="true"/>
-                <filter class="solr.FlattenGraphFilterFactory"/>
             </analyzer>
         </fieldType>
 
         <fieldType name="textgen" class="solr.TextField" positionIncrementGap="100">
             <analyzer type="index">
                 <tokenizer class="solr.WhitespaceTokenizerFactory"/>
-                <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="1" catenateNumbers="1" catenateAll="0" splitOnCaseChange="0"/>
+                <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="1" generateNumberParts="1"
+                        catenateWords="1" catenateNumbers="1" catenateAll="0" splitOnCaseChange="0"/>
                 <filter class="solr.FlattenGraphFilterFactory"/>
                 <filter class="solr.LowerCaseFilterFactory"/>
             </analyzer>
             <analyzer type="query">
                 <tokenizer class="solr.WhitespaceTokenizerFactory"/>
-                <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="0" catenateNumbers="0" catenateAll="0" splitOnCaseChange="0"/>
+                <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="1" generateNumberParts="1"
+                        catenateWords="0" catenateNumbers="0" catenateAll="0" splitOnCaseChange="0"/>
                 <filter class="solr.FlattenGraphFilterFactory"/>
                 <filter class="solr.LowerCaseFilterFactory"/>
-            </analyzer>
-        </fieldType>
-
-        <fieldType name="uri_label_nl" class="solr.TextField" positionIncrementGap="100">
-            <analyzer type="index">
-                <tokenizer class="solr.KeywordTokenizerFactory"/>
-                <filter class="solr.SynonymGraphFilterFactory" synonyms="lang/synonyms_uri_nl.txt" ignoreCase="false" expand="true"/>
-                <filter class="solr.FlattenGraphFilterFactory"/>
-                <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="1" generateNumberParts="1" />
-                <filter class="solr.FlattenGraphFilterFactory"/>
-                <filter class="solr.LowerCaseFilterFactory"/>
-                <filter class="solr.ASCIIFoldingFilterFactory"/>
-            </analyzer>
-            <analyzer type="query">
-                <tokenizer class="solr.StandardTokenizerFactory"/>
-                <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="1" generateNumberParts="1" />
-                <filter class="solr.LowerCaseFilterFactory"/>
-                <filter class="solr.ASCIIFoldingFilterFactory"/>
-            </analyzer>
-        </fieldType>
-
-        <fieldType name="uri_label_en" class="solr.TextField" positionIncrementGap="100">
-            <analyzer type="index">
-                <tokenizer class="solr.KeywordTokenizerFactory"/>
-                <filter class="solr.SynonymGraphFilterFactory" synonyms="lang/synonyms_uri_en.txt" ignoreCase="false" expand="true"/>
-                <filter class="solr.FlattenGraphFilterFactory"/>
-                <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="1" generateNumberParts="1" />
-                <filter class="solr.FlattenGraphFilterFactory"/>
-                <filter class="solr.LowerCaseFilterFactory"/>
-                <filter class="solr.ASCIIFoldingFilterFactory"/>
-            </analyzer>
-            <analyzer type="query">
-                <tokenizer class="solr.StandardTokenizerFactory"/>
-                <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="1" generateNumberParts="1" />
-                <filter class="solr.LowerCaseFilterFactory"/>
-                <filter class="solr.ASCIIFoldingFilterFactory"/>
-            </analyzer>
-        </fieldType>
-
-        <fieldType name="spellcheck" class="solr.TextField" positionIncrementGap="100" multiValued="true">
-            <analyzer>
-                <tokenizer class="solr.StandardTokenizerFactory"/>
-                <filter class="solr.LowerCaseFilterFactory"/>
-                <filter class="solr.ASCIIFoldingFilterFactory"/>
-                <filter class="solr.StopFilterFactory" format="snowball" words="lang/stopwords_nl.txt" ignoreCase="true"/>
             </analyzer>
         </fieldType>
     </types>
@@ -128,8 +51,8 @@
         <field name="identifier" type="string" indexed="true" stored="true" multiValued="false"/>
         <field name="alternate_identifier" type="string" indexed="true" stored="true" multiValued="true"/>
         <field name="language" type="string" indexed="true" stored="true" multiValued="true"/>
-        <field name="authority" type="text" indexed="true" stored="true" multiValued="false"/>
-        <field name="publisher" type="text" indexed="true" stored="true" multiValued="false"/>
+        <field name="authority" type="string" indexed="true" stored="true" multiValued="false"/>
+        <field name="publisher" type="string" indexed="true" stored="true" multiValued="false"/>
         <field name="contact_point_address" type="string" indexed="true" stored="true" multiValued="false"/>
         <field name="contact_point_email" type="string" indexed="true" stored="true" multiValued="false"/>
         <field name="contact_point_name" type="string" indexed="true" stored="true" multiValued="false"/>
@@ -192,15 +115,13 @@
         <field name="res_link_status" type="boolean" indexed="true" stored="true"/>
         <field name="res_link_status_last_checked" type="date" indexed="true" stored="true"/>
         <field name="res_is_duplicate_of" type="text" indexed="true" stored="true"/>
-        <field name="communities" type="string" indexed="true" stored="true" multiValued="true"/>
-        <field name="uri_label_nl" type="uri_label_nl" indexed="true" stored="true" multiValued="true"/>
-        <field name="uri_label_en" type="uri_label_en" indexed="true" stored="true" multiValued="true"/>
+        <field name="communities" type="text" indexed="true" stored="true" multiValued="true"/>
 
         <!-- CKAN Package -->
         <field name="index_id" type="string" indexed="true" stored="true" required="true"/>
         <field name="id" type="string" indexed="true" stored="true" required="true"/>
         <field name="site_id" type="string" indexed="true" stored="true" required="true"/>
-        <field name="title" type="text_title" indexed="true" stored="true" multiValued="false"/>
+        <field name="title" type="text" indexed="true" stored="true" multiValued="false"/>
         <field name="entity_type" type="string" indexed="true" stored="true" omitNorms="true"/>
         <field name="dataset_type" type="string" indexed="true" stored="true"/>
         <field name="state" type="string" indexed="true" stored="true" omitNorms="true"/>
@@ -250,38 +171,12 @@
         <field name="indexed_ts" type="date" indexed="true" stored="true" default="NOW"/>
         <field name="data_dict" type="string" indexed="false" stored="true"/>
         <field name="validated_data_dict" type="string" indexed="false" stored="true"/>
-        <field name="_version_" type="string" indexed="true" stored="true"/>
+        <field name="_version_" type="string" indexed="true" stored="true" multiValued="false"/>
         <field name="title_string" type="string" indexed="true" stored="false"/>
 
         <!-- Search fields -->
         <field name="text" type="text" indexed="true" stored="false" multiValued="true"/>
-        <field name="text_title" type="text_title" indexed="true" stored="false"/>
 
-        <!--  Spellcheck field  -->
-        <field name="spellcheck" type="spellcheck" indexed="true" stored="false" multiValued="true"/>
-
-        <!--  Search Facets  -->
-        <field name="facet_language" type="string" indexed="true" stored="true" multiValued="true"/>
-        <field name="facet_authority" type="string" indexed="true" stored="true"/>
-        <field name="facet_publisher" type="string" indexed="true" stored="true"/>
-        <field name="facet_access_rights" type="string" indexed="true" stored="true"/>
-        <field name="facet_frequency" type="string" indexed="true" stored="true"/>
-        <field name="facet_license_id" type="string" indexed="true" stored="true"/>
-        <field name="facet_metadata_language" type="string" indexed="true" stored="true"/>
-        <field name="facet_source_catalog" type="string" indexed="true" stored="true"/>
-        <field name="facet_dataset_status" type="string" indexed="true" stored="true"/>
-        <field name="facet_res_status" type="string" indexed="true" stored="true" multiValued="true"/>
-        <field name="facet_theme" type="theme_hierarchy" indexed="true" stored="true" multiValued="true"/>
-        <field name="facet_high_value" type="string" indexed="true" stored="true"/>
-        <field name="facet_referentie_data" type="string" indexed="true" stored="true"/>
-        <field name="facet_basis_register" type="string" indexed="true" stored="true"/>
-        <field name="facet_communities" type="string" indexed="true" stored="true" multiValued="true"/>
-        <field name="facet_res_format" type="string" indexed="true" stored="true" multiValued="true"/>
-        <field name="facet_tags" type="string" indexed="true" stored="true" multiValued="true"/>
-        <field name="facet_national_coverage" type="string" indexed="true" stored="true"/>
-        <field name="facet_groups" type="string" indexed="true" stored="true" multiValued="true"/>
-
-        <!-- Dynamic -->
         <dynamicField name="*_date" type="date" indexed="true" stored="true"/>
         <dynamicField name="extras_*" type="text" indexed="true" stored="true"/>
         <dynamicField name="res_extras_*" type="text" indexed="true" stored="true" multiValued="true"/>
@@ -311,59 +206,9 @@
     <copyField source="tags" dest="text"/>
     <copyField source="text" dest="text"/>
     <copyField source="theme" dest="text"/>
-    <copyField source="title" dest="text_title"/>
+    <copyField source="title" dest="text"/>
     <copyField source="url" dest="urls"/>
     <copyField source="urls" dest="text"/>
     <copyField source="vocab_*" dest="text"/>
     <copyField source="communities" dest="text"/>
-
-    <copyField source="notes" dest="spellcheck"/>
-    <copyField source="title" dest="spellcheck"/>
-
-    <!-- Copy fields that contain an URI to URI field.
-    This field is mapped to labels using generated synonym files -->
-    <copyField source="authority" dest="uri_label_nl"/>
-    <copyField source="authority" dest="uri_label_en"/>
-    <copyField source="publisher" dest="uri_label_nl"/>
-    <copyField source="publisher" dest="uri_label_en"/>
-    <copyField source="theme" dest="uri_label_nl"/>
-    <copyField source="theme" dest="uri_label_en"/>
-    <!-- Note that only Dutch title is available -->
-    <copyField source="license_id" dest="uri_label_nl"/>
-    <copyField source="license_id" dest="uri_label_en"/>
-    <copyField source="dataset_status" dest="uri_label_nl"/>
-    <copyField source="dataset_status" dest="uri_label_en"/>
-    <copyField source="res_format" dest="uri_label_nl"/>
-    <copyField source="res_format" dest="uri_label_en"/>
-    <copyField source="source_catalog" dest="uri_label_nl"/>
-    <copyField source="source_catalog" dest="uri_label_en"/>
-    <copyField source="access_rights" dest="uri_label_nl"/>
-    <copyField source="access_rights" dest="uri_label_en"/>
-    <copyField source="metadata_language" dest="uri_label_nl"/>
-    <copyField source="metadata_language" dest="uri_label_en"/>
-    <copyField source="language" dest="uri_label_nl"/>
-    <copyField source="language" dest="uri_label_en"/>
-    <copyField source="frequency" dest="uri_label_nl"/>
-    <copyField source="frequency" dest="uri_label_en"/>
-
-    <!-- Facet copy fields -->
-    <copyField source="language" dest="facet_language"/>
-    <copyField source="authority" dest="facet_authority"/>
-    <copyField source="publisher" dest="facet_publisher"/>
-    <copyField source="access_rights" dest="facet_access_rights"/>
-    <copyField source="frequency" dest="facet_frequency"/>
-    <copyField source="license_id" dest="facet_license_id"/>
-    <copyField source="metadata_language" dest="facet_metadata_language"/>
-    <copyField source="source_catalog" dest="facet_source_catalog"/>
-    <copyField source="dataset_status" dest="facet_dataset_status"/>
-    <copyField source="res_status" dest="facet_res_status"/>
-    <copyField source="theme" dest="facet_theme"/>
-    <copyField source="referentie_data" dest="facet_referentie_data"/>
-    <copyField source="high_value" dest="facet_high_value"/>
-    <copyField source="basis_register" dest="facet_basis_register"/>
-    <copyField source="communities" dest="facet_communities"/>
-    <copyField source="res_format" dest="facet_res_format"/>
-    <copyField source="tags" dest="facet_tags"/>
-    <copyField source="national_coverage" dest="facet_national_coverage"/>
-    <copyField source="groups" dest="facet_groups"/>
 </schema>

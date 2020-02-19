@@ -142,21 +142,7 @@ class InterfacePlugin(plugins.SingletonPlugin):
 
     def dataset_facets(self, facets_dict, package_type):
         facets_dict.pop('organization', None)
-        facets_dict.pop('groups', None)
-        facets_dict.pop('tags', None)
-        facets_dict.pop('license_id', None)
-        facets_dict.pop('res_format', None)
-
         facets_dict['organization'] = tk._('CKAN Organization')
-        facets_dict['groups'] = tk._('CKAN Group')
-
-        facets_dict['facet_authority'] = tk._('donl:authority')
-        facets_dict['facet_publisher'] = tk._('donl:publisher')
-        facets_dict['facet_source_catalog'] = tk._('donl:sourceCatalog')
-        facets_dict['facet_dataset_status'] = tk._('donl:datasetStatus')
-        facets_dict['facet_access_rights'] = tk._('donl:accessRights')
-        facets_dict['license_id'] = tk._('donl:license')
-        facets_dict['res_url'] = tk._('donl:format')
 
         return facets_dict
 

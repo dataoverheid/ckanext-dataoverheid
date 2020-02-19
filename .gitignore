@@ -44,11 +44,22 @@ coverage.xml
 docs/_build/*
 
 # CKAN extension
+authorization.json
 ckanext/dataoverheid/log/*
 ckanext/dataoverheid/resources/vocabularies/*
 ckanext/dataoverheid/resources/taxonomies/*
-ckanext/dataoverheid/resources/solr/donl_dataset/lang/synonyms_uri_nl.txt
-ckanext/dataoverheid/resources/solr/donl_dataset/lang/synonyms_uri_en.txt
+ckanext/dataoverheid/resources/solr/donl_dataset/*
+!ckanext/dataoverheid/resources/solr/donl_dataset/schema.xml
+!ckanext/dataoverheid/resources/solr/donl_dataset/solrconfig.xml
+ckanext/dataoverheid/resources/solr/donl_search/*
+!ckanext/dataoverheid/resources/solr/donl_search/schema.xml
+!ckanext/dataoverheid/resources/solr/donl_search/solrconfig.xml
+ckanext/dataoverheid/resources/solr/donl_suggester/*
+!ckanext/dataoverheid/resources/solr/donl_suggester/schema.xml
+!ckanext/dataoverheid/resources/solr/donl_suggester/solrconfig.xml
 
 # Git
 !.gitkeep
+
+# Python virtual environment
+/venv/*

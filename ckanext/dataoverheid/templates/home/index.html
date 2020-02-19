@@ -46,8 +46,8 @@
         <div role="main" class="homepage-contents">
             {% set counts = {
                 'datasets': query_results['count'],
-                'authorities': query_results['facets']['facet_authority']|length,
-                'catalogs': query_results['facets']['facet_source_catalog']|length
+                'authorities': query_results['facets']['authority']|length,
+                'catalogs': query_results['facets']['source_catalog']|length
             } %}
             <div class="container">
                 <div class="row row2">
