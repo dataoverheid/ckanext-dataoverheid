@@ -351,9 +351,9 @@
         "http://standaarden.overheid.nl/owms/terms/Zorg_en_gezondheid",
         "http://standaarden.overheid.nl/owms/terms/Zorg_en_gezondheid|http://standaarden.overheid.nl/owms/terms/Geneesmiddelen_en_medische_hulpmiddelen"
     ],
-    "http://standaarden.overheid.nl/owms/terms/Gezondheidsrisico\"s": [
+    "http://standaarden.overheid.nl/owms/terms/Gezondheidsrisico's": [
         "http://standaarden.overheid.nl/owms/terms/Zorg_en_gezondheid",
-        "http://standaarden.overheid.nl/owms/terms/Zorg_en_gezondheid|http://standaarden.overheid.nl/owms/terms/Gezondheidsrisico\"s"
+        "http://standaarden.overheid.nl/owms/terms/Zorg_en_gezondheid|http://standaarden.overheid.nl/owms/terms/Gezondheidsrisico's"
     ],
     "http://standaarden.overheid.nl/owms/terms/Jongeren_(gezondheid-thema)": [
         "http://standaarden.overheid.nl/owms/terms/Zorg_en_gezondheid",

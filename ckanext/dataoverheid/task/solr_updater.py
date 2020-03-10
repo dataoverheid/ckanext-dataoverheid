@@ -988,7 +988,7 @@ if '__main__' == __name__:
     donl_search = subparser.add_parser('update_donl_search', help='update the index of the donl_search Solr core')
     donl_search.add_argument('--delta', type=bool, nargs='?', const=True, default=False,
                              help='only process documents for which changes are detected in the donl_dataset Solr core')
-    donl_search.add_argument('--console', type=bool, nargs='?', const=True, default=False, required=True,
+    donl_search.add_argument('--console', type=bool, nargs='?', const=True, default=False,
                              help='to enable console logging')
 
     donl_search = subparser.add_parser('update_donl_suggester', help='update the index of the donl_suggester Solr core')
