@@ -60,7 +60,7 @@ def convert_list_to_string(key, data, errors, context):
     if not value or not isinstance(value, list):
         return
 
-    data[key] = '{{0}}'.format(','.join(map(str, value)))
+    data[key] = '{' + ','.join(map(str, value)) + '}'
 
 
 def default(default_value, force=False):
