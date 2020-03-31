@@ -209,6 +209,26 @@
                 "rules": {
                     "basis_register": true
                 }
+            },
+            {
+                "uri": "https://data.overheid.nl/communities/migratie",
+                "rules": {
+                    "theme": [
+                        "http://standaarden.overheid.nl/owms/terms/Migratie_en_integratie",
+                        "http://standaarden.overheid.nl/owms/terms/Immigratie_(thema)",
+                        "http://standaarden.overheid.nl/owms/terms/Nederlanderschap_(thema)",
+                        "http://standaarden.overheid.nl/owms/terms/Integratie_(thema)",
+                        "http://standaarden.overheid.nl/owms/terms/Emigratie_(thema)"
+                    ]
+                }
+            },
+            {
+                "uri": "https://data.overheid.nl/communities/corona",
+                "rules": {
+                },
+                "tags": [
+                    "corona"
+                ]
             }
         ],
         "non_open_licenses": [

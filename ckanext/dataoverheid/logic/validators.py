@@ -2,17 +2,16 @@
 
 
 import ckan.plugins.toolkit as tk
-from urlparse import urlparse
+from ckan.plugins.toolkit import StopOnError
+from ckanext.dataoverheid.logic.helpers.config import get_validation_configuration, in_list as in_code_list
 from datetime import datetime
 from dateutil import parser
+import logging
+from urlparse import urlparse
 import re
-from ckanext.dataoverheid.logic.helpers.config import get_validation_configuration, in_list as in_code_list
 
 
-if tk.check_ckan_version('2.6', None):
-    from ckan.plugins.toolkit import StopOnError
-else:
-    from ckan.lib.navl.dictization_functions import StopOnError
+logger = logging.getLogger('ckanext-dataoverheid')
 
 
 def single_valued(key, data, errors, context):
@@ -24,12 +23,11 @@ def single_valued(key, data, errors, context):
      - https://docs.ckan.org/en/latest/extensions/adding-custom-fields.html#custom-validators
      - https://docs.ckan.org/en/latest/extensions/plugins-toolkit.html#ckan.plugins.toolkit.ckan.plugins.toolkit.StopOnError
 
-    :param tuple key:    Injected by CKAN core
-    :param dict data:    Injected by CKAN core
-    :param dict errors:  Injected by CKAN core
+    :param tuple key: Injected by CKAN core
+    :param dict data: Injected by CKAN core
+    :param dict errors: Injected by CKAN core
     :param dict context: Injected by CKAN core
-
-    :return: void
+    :rtype: None
     """
     if isinstance(data[key], list):
         errors[key] = [] if not errors[key] else errors[key]
@@ -42,8 +40,8 @@ def multi_valued(allow_duplicates=False):
     Generates a function which validates a given value to ensure that it is multi valued(a list).
 
     :param bool allow_duplicates: Whether or not to allow duplicate values in the list
-
-    :return: function, A function that checks if a given value is multi valued
+    :rtype: function
+    :return: A function that checks if a given value is multi valued
     """
     def multi_valued_validator(key, data, errors, context):
         """
@@ -55,12 +53,11 @@ def multi_valued(allow_duplicates=False):
          - https://docs.ckan.org/en/latest/extensions/adding-custom-fields.html#custom-validators
          - https://docs.ckan.org/en/latest/extensions/plugins-toolkit.html#ckan.plugins.toolkit.ckan.plugins.toolkit.StopOnError
 
-        :param tuple key:    Injected by CKAN core
-        :param dict data:    Injected by CKAN core
-        :param dict errors:  Injected by CKAN core
+        :param tuple key: Injected by CKAN core
+        :param dict data: Injected by CKAN core
+        :param dict errors: Injected by CKAN core
         :param dict context: Injected by CKAN core
-
-        :return: void
+        :rtype: None
         """
         tk.get_validator('convert_string_to_list')(key, data, errors, context)
         errors[key] = [] if not errors[key] else errors[key]
@@ -91,12 +88,11 @@ def string(key, data, errors, context):
      - https://docs.ckan.org/en/latest/extensions/adding-custom-fields.html#custom-validators
      - https://docs.ckan.org/en/latest/extensions/plugins-toolkit.html#ckan.plugins.toolkit.ckan.plugins.toolkit.StopOnError
 
-    :param tuple key:    Injected by CKAN core
-    :param dict data:    Injected by CKAN core
-    :param dict errors:  Injected by CKAN core
+    :param tuple key: Injected by CKAN core
+    :param dict data: Injected by CKAN core
+    :param dict errors: Injected by CKAN core
     :param dict context: Injected by CKAN core
-
-    :return: void
+    :rtype: None
     """
     if not data[key]:
         return
@@ -127,12 +123,11 @@ def boolean(key, data, errors, context):
      - https://docs.ckan.org/en/latest/extensions/adding-custom-fields.html#custom-validators
      - https://docs.ckan.org/en/latest/extensions/plugins-toolkit.html#ckan.plugins.toolkit.ckan.plugins.toolkit.StopOnError
 
-    :param tuple key:    Injected by CKAN core
-    :param dict data:    Injected by CKAN core
-    :param dict errors:  Injected by CKAN core
+    :param tuple key: Injected by CKAN core
+    :param dict data: Injected by CKAN core
+    :param dict errors: Injected by CKAN core
     :param dict context: Injected by CKAN core
-
-    :return: void
+    :rtype: None
     """
     acceptable_values = [True, 'True', 'true', False, 'False', 'false']
 
@@ -165,12 +160,11 @@ def uri(key, data, errors, context):
      - https://docs.ckan.org/en/latest/extensions/adding-custom-fields.html#custom-validators
      - https://docs.ckan.org/en/latest/extensions/plugins-toolkit.html#ckan.plugins.toolkit.ckan.plugins.toolkit.StopOnError
 
-    :param tuple key:    Injected by CKAN core
-    :param dict data:    Injected by CKAN core
-    :param dict errors:  Injected by CKAN core
+    :param tuple key: Injected by CKAN core
+    :param dict data: Injected by CKAN core
+    :param dict errors: Injected by CKAN core
     :param dict context: Injected by CKAN core
-
-    :return: void
+    :rtype: None
     """
     if not data[key]:
         return
@@ -201,8 +195,8 @@ def date(datetime_format):
     Creates a function which validates datetime objects based on the given datetime_format.
 
     :param str datetime_format: The datetime_format to use for validation
-
-    :return: function, the validation function
+    :rtype: function
+    :return: The validation function
     """
     def valid_date(key, data, errors, context):
         """
@@ -217,12 +211,11 @@ def date(datetime_format):
          - https://docs.ckan.org/en/latest/extensions/adding-custom-fields.html#custom-validators
          - https://docs.ckan.org/en/latest/extensions/plugins-toolkit.html#ckan.plugins.toolkit.ckan.plugins.toolkit.StopOnError
 
-        :param tuple key:    Injected by CKAN core
-        :param dict data:    Injected by CKAN core
-        :param dict errors:  Injected by CKAN core
+        :param tuple key: Injected by CKAN core
+        :param dict data: Injected by CKAN core
+        :param dict errors: Injected by CKAN core
         :param dict context: Injected by CKAN core
-
-        :return: void
+        :rtype: None
         """
         if not data[key]:
             return
@@ -268,12 +261,11 @@ def number(key, data, errors, context):
      - https://docs.ckan.org/en/latest/extensions/adding-custom-fields.html#custom-validators
      - https://docs.ckan.org/en/latest/extensions/plugins-toolkit.html#ckan.plugins.toolkit.ckan.plugins.toolkit.StopOnError
 
-    :param tuple key:    Injected by CKAN core
-    :param dict data:    Injected by CKAN core
-    :param dict errors:  Injected by CKAN core
+    :param tuple key: Injected by CKAN core
+    :param dict data: Injected by CKAN core
+    :param dict errors: Injected by CKAN core
     :param dict context: Injected by CKAN core
-
-    :return: void
+    :rtype: None
     """
     if not data[key]:
         return
@@ -316,32 +308,47 @@ def extract_communities(key, data, errors, context):
     See also:
      - https://docs.ckan.org/en/latest/extensions/adding-custom-fields.html#custom-validators
 
-    :param tuple key:    Injected by CKAN core
-    :param dict data:    Injected by CKAN core
-    :param dict errors:  Injected by CKAN core
+    :param tuple key: Injected by CKAN core
+    :param dict data: Injected by CKAN core
+    :param dict errors: Injected by CKAN core
     :param dict context: Injected by CKAN core
-
-    :return: void
+    :rtype: None
     """
     data[('communities',)] = []
     errors[('communities',)] = []
+    communities = []
+    tags = []
+
+    for key, value in data.iteritems():
+        if len(key) == 3 and key[0] == 'tags' and key[2] == 'name':
+            tags.append(value)
 
     for community in get_validation_configuration()['communities']:
-        [data[('communities',)].append(community['uri']) for prop in community['rules'] if (prop,) in data
+        [communities.append(community['uri']) for prop in community['rules'] if (prop,) in data
          and isinstance(data[(prop,)], list) and isinstance(community['rules'][prop], list)
          and any(prop_value in community['rules'][prop] for prop_value in data.get((prop,)))]
 
-        [data[('communities',)].append(community['uri']) for prop in community['rules'] if (prop,) in data
+        [communities.append(community['uri']) for prop in community['rules'] if (prop,) in data
          and isinstance(data[(prop,)], basestring) and isinstance(community['rules'][prop], list)
          and data.get((prop,)) in community['rules'][prop]]
 
-        [data[('communities',)].append(community['uri']) for prop in community['rules'] if (prop,) in data
-         and isinstance(data[(prop,)], bool) and isinstance(community['rules'][prop], bool)
-         and data.get((prop,)) == community['rules'][prop]]
+        [communities.append(community['uri']) for prop in community['rules'] if (prop,) in data
+         and isinstance(community['rules'][prop], bool) and data.get((prop,)) == community['rules'][prop]]
 
-    data[('communities',)] = list(set(data[('communities',)]))
+        try:
+            [communities.append(community['uri']) for tag in tags if tag in community['tags']]
+        except KeyError:
+            logger.info('no community extraction based on tags; no rules defined for community %s', community['uri'])
 
-    return
+    communities = list(set(communities))
+
+    for community in communities:
+        if in_code_list('DONL:Communities', 'taxonomy', community):
+            logger.info('community [ %s ] added to dataset', community)
+
+            data[('communities',)].append(community)
+        else:
+            logger.warning('community [ %s ] removed; not part of the taxonomy', community)
 
 
 def in_list(name, list_type):
@@ -679,7 +686,7 @@ def spatial(key, data, errors, context):
         'http://standaarden.overheid.nl/owms/4.0/doc/waardelijsten/overheid.waterschap':
             tk.get_validator('controlled_vocabulary')('Overheid:SpatialWaterschap'),
         'http://standaarden.overheid.nl/owms/4.0/doc/syntax-codeerschemas/overheid.epsg28992':
-            tk.get_validator('epsg28992'),
+            tk.get_validator('epsg_28992'),
         'http://standaarden.overheid.nl/owms/4.0/doc/syntax-codeerschemas/overheid.postcodehuisnummer':
             tk.get_validator('postcode_huisnummer')
     }

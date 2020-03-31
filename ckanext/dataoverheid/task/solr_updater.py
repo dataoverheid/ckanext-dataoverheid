@@ -723,7 +723,8 @@ def get_dataset_title_suggestions(config):
         'sys_type': 'type',
         'sys_name': 'payload',
         'sys_modified': 'weight',
-        'sys_created': 'weight'
+        'sys_created': 'weight',
+        'relation_community': 'community'
     }
 
     dataset_mapper = DatasetMapper(mappings)
@@ -756,35 +757,31 @@ def get_uri_suggestions(config, uri_field, suggester_field, donl_type):
     """
 
     search_core = DonlSearchCore(config['solr']['host'], config['authorization'])
-    entities = search_core.select_all_documents('sys_type:{0}'.format(donl_type), [uri_field])
-    uris = set()
+    entities = search_core.select_all_documents('sys_type:{0}'.format(donl_type), [uri_field, 'facet_community'])
+    uris = {}
 
     for entity in entities:
+        communities = []
+        if 'facet_community' in entity:
+            communities = entity['facet_community']
+
         if uri_field in entity:
             for uri in entity[uri_field]:
-                uris.add(uri)
-
-    facet = search_core.select_documents({
-        'fq': 'sys_type:{0}'.format(donl_type),
-        'q': '*:*',
-        'rows': 0,
-        'facet': 'true',
-        'facet.field': 'facet_{0}'.format(uri_field),
-        'f.facet_authority.facet.mincount': 1,
-        'f.facet_authority.facet.limit': -1,
-    })
-
-    facet_data = facet['facet_counts']['facet_fields']['facet_{0}'.format(uri_field)]
-    counts = {}
-    for i, data in enumerate(facet_data):
-        if i % 2 == 0:
-            counts[data] = facet_data[i + 1]
+                if uri in uris:
+                    uris[uri]['community'].update(communities)
+                    uris[uri]['count'] += 1
+                else:
+                    uris[uri] = {
+                        'community': set(),
+                        'count': 1
+                    }
+                    uris[uri]['community'].update(communities)
 
     languages = ['nl', 'en']
     suggestions = []
     for language in languages:
         synonyms = search_core.select_managed_synonyms('uri_{0}'.format(language))
-        for uri in uris:
+        for uri in uris.keys():
             if uri in synonyms:
                 labels = synonyms[uri]
                 for label in labels:
@@ -792,8 +789,9 @@ def get_uri_suggestions(config, uri_field, suggester_field, donl_type):
                         suggester_field: label,
                         'type': donl_type,
                         'payload': uri,
-                        'weight': counts[uri] if uri in counts else 0,
-                        'language': language
+                        'weight': uris[uri]['count'],
+                        'language': language,
+                        'community': list(uris[uri]['community'])
                     })
 
     return suggestions
