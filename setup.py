@@ -12,7 +12,7 @@ with open(path.join(path.abspath(path.dirname(__file__)), 'README.md'), encoding
 
 setup(
     name='''ckanext-dataoverheid''',
-    version='2.1.1',
+    version='2.1.2',
     description='''The CKAN extension that implements the DCAT-AP-DONL metadata standard into CKAN as well as specific 
                    extra features which are part of the data.overheid.nl application.''',
     long_description=long_description,
