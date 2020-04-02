@@ -1,6 +1,6 @@
 {
     "solr": {
-        "host": "http://127.0.0.1:8983/solr",
+        "host": "http://solr:8983/solr",
         "mappings": {
             "donl_dataset_to_donl_search": {
                 "id": "sys_id",
