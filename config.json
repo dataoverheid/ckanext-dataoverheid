@@ -72,6 +72,11 @@
                 "dataset": "authority",
                 "datarequest": "authority",
                 "appliance": "authority"
+            },
+            "community": {
+                "dataset": "relation_community",
+                "datarequest": "relation_community",
+                "appliance": "relation_community"
             }
         },
         "relations": {
@@ -200,7 +205,12 @@
                         "http://standaarden.overheid.nl/owms/terms/sbb"
                     ],
                     "theme": [
-                        "http://standaarden.overheid.nl/owms/terms/Onderwijs_en_wetenschap"
+                        "http://standaarden.overheid.nl/owms/terms/Onderwijs_en_wetenschap",
+                        "http://standaarden.overheid.nl/owms/terms/Onderzoek_en_wetenschap",
+                        "http://standaarden.overheid.nl/owms/terms/Basisonderwijs_(thema)",
+                        "http://standaarden.overheid.nl/owms/terms/Hoger_onderwijs_(thema)",
+                        "http://standaarden.overheid.nl/owms/terms/Voortgezet_onderwijs_(thema)",
+                        "http://standaarden.overheid.nl/owms/terms/Beroepsonderwijs_(thema)"
                     ]
                 }
             },
