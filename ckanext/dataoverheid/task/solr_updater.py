@@ -100,8 +100,6 @@ class SolrCore:
         :rtype:  bool
         :return: Whether or not the documents were added to the index
         """
-        logging.info(' indexing:                          %d documents to %s', len(documents), self.core_name)
-
         batches = [documents[i:i+batch_size] for i in range(0, len(documents), batch_size)]
 
         [self._execute_request(self._create_core_request('update{0}'.format('?commit=true' if commit else ''), batch))
@@ -117,8 +115,7 @@ class SolrCore:
         :rtype:  bool
         :return: Whether or not the documents that match the query were deleted from the Solr core
         """
-        logging.info(' deleting:                          %d documents from %s', self.document_count(query),
-                     self.core_name)
+        logging.info(' deleting:        %d documents from %s', self.document_count(query), self.core_name)
 
         return self._execute_request(self._create_core_request('update{0}'.format('?commit=true' if commit else ''), {
             'delete': {'query': query}
@@ -131,7 +128,7 @@ class SolrCore:
         :rtype:  bool
         :return: Whether or not the core was successfully reloaded
         """
-        logging.info(' reloading:                         %s', self.core_name)
+        logging.info(' reloading:       %s', self.core_name)
 
         return self._execute_request(self._create_solr_request('admin/cores?action=RELOAD&core={0}'
                                                                .format(self.core_name))) is not None
@@ -696,17 +693,27 @@ def update_donl_search(args):
     logging.info(' remove:          %s', len(datasets_to_delete))
     logging.info('')
 
-    donl_search_core.index_documents(datasets_to_create.values(), commit=True)
     logging.info('index results:')
+
+    donl_search_core.index_documents(datasets_to_create.values(), commit=False)
     logging.info(' new:             %s', len(datasets_to_create))
 
-    donl_search_core.index_documents(datasets_to_update.values(), commit=True)
+    donl_search_core.index_documents(datasets_to_update.values(), commit=False)
     logging.info(' updated:         %s', len(datasets_to_update))
 
     for sys_id in datasets_to_delete.keys():
-        donl_search_core.delete_documents('sys_id:{0}'.format(sys_id), commit=True)
+        donl_search_core.delete_documents('sys_id:{0}'.format(sys_id), commit=False)
     logging.info(' deleted:         %s', len(datasets_to_delete))
 
+    logging.info('')
+    logging.info('committing index changes')
+    donl_search_core.index_documents([], commit=True)
+    logging.info('')
+
+    logging.info('reloading donl_search core')
+    donl_search_core.reload()
+    logging.info('')
+    
     logging.info('')
     logging.info('donl_search core updated')
 
@@ -739,7 +746,6 @@ def get_dataset_title_suggestions(config):
         dataset['language'] = ['nl', 'en']
         title_suggestions.append(dataset)
 
-    logging.info(' new title suggestions:             %d', len(title_suggestions))
     return title_suggestions
 
 
@@ -824,18 +830,40 @@ def get_theme_suggestions(config, donl_type):
 
 
 def update_donl_suggester(args):
-    logging.info('action:                             %s', args['action'])
-    logging.info('input:                              none')
+    logging.info('action:           %s', args['action'])
+    logging.info('input:            none')
 
     config = load_config()
-
     suggester_core = DonlSuggesterCore(config['solr']['host'], config['authorization'])
-    suggester_core.delete_documents('*:*', True)
 
-    suggester_core.index_documents(get_dataset_title_suggestions(config), True, 200)
-    suggester_core.index_documents(get_organization_suggestions(config, 'dataset'), True, 200)
-    suggester_core.index_documents(get_theme_suggestions(config, 'dataset'), True, 200)
+    logging.info('')
+    logging.info('clearing donl_suggester core')
+    suggester_core.delete_documents('*:*', commit=False)
+    logging.info('')
+
+    title_suggestions = get_dataset_title_suggestions(config)
+    organization_suggestions = get_organization_suggestions(config, 'dataset')
+    theme_suggestions = get_theme_suggestions(config, 'dataset')
+
+    logging.info('index results:')
+
+    suggester_core.index_documents(title_suggestions, commit=False, batch_size=200)
+    logging.info(' titles:          %s', len(title_suggestions))
+
+    suggester_core.index_documents(organization_suggestions, commit=False, batch_size=200)
+    logging.info(' organizations:   %s', len(organization_suggestions))
+
+    suggester_core.index_documents(theme_suggestions, commit=False, batch_size=200)
+    logging.info(' themes:          %s', len(theme_suggestions))
+
+    logging.info('')
+    logging.info('committing index changes')
+    suggester_core.index_documents([], commit=True)
+    logging.info('')
+
+    logging.info('reloading donl_suggester core')
     suggester_core.reload()
+    logging.info('')
 
     logging.info('')
     logging.info('donl_suggester core updated')
