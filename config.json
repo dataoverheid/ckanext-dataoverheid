@@ -77,6 +77,9 @@
                 "dataset": "relation_community",
                 "datarequest": "relation_community",
                 "appliance": "relation_community"
+            },
+            "catalog": {
+                "dataset": "catalog"
             }
         },
         "relations": {
@@ -221,14 +224,10 @@
                 }
             },
             {
-                "uri": "https://data.overheid.nl/communities/migratie",
+                "uri": "https://data.overheid.nl/communities/open-data-migratieketen",
                 "rules": {
                     "theme": [
-                        "http://standaarden.overheid.nl/owms/terms/Migratie_en_integratie",
-                        "http://standaarden.overheid.nl/owms/terms/Immigratie_(thema)",
-                        "http://standaarden.overheid.nl/owms/terms/Nederlanderschap_(thema)",
-                        "http://standaarden.overheid.nl/owms/terms/Integratie_(thema)",
-                        "http://standaarden.overheid.nl/owms/terms/Emigratie_(thema)"
+                        "http://standaarden.overheid.nl/owms/terms/Immigratie_(thema)"
                     ]
                 }
             },

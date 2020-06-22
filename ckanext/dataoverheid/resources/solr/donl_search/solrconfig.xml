@@ -418,15 +418,54 @@
         </arr>
     </requestHandler>
 
-    <requestHandler name="/autocomplete_identifier" class="solr.SearchHandler" startup="lazy">
+    <requestHandler name="/select_catalog" class="solr.SearchHandler">
         <lst name="defaults">
-            <str name="suggest">true</str>
-            <str name="suggest.dictionary">autocomplete_identifier</str>
-            <str name="suggest.count">3</str>
+            <str name="q.op">AND</str>
+            <str name="echoParams">explicit</str>
+            <str name="df">text</str>
+            <str name="qf">text title uri_synonym_nl uri_synonym_en</str>
+            <str name="defType">edismax</str>
+            <str name="fl">sys_id, sys_name, sys_language, sys_type, sys_created, sys_modified, sys_uri, title,
+                description
+            </str>
         </lst>
-        <arr name="components">
-            <str>autocomplete_component</str>
+
+        <lst name="appends">
+            <str name="fq">sys_type:catalog</str>
+            <str name="facet">true</str>
+            <str name="facet.mincount">1</str>
+            <str name="facet.field">facet_sys_language</str>
+            <str name="facet.field">facet_community</str>
+            <str name="facet.field">facet_related_to</str>
+
+            <str name="facet.interval">{!key=facet_recent}sys_modified</str>
+            <str name="f.sys_modified.facet.interval.set">[NOW-1MONTH, NOW+1DAY]</str>
+            <str name="f.sys_modified.facet.interval.set">[NOW-1YEAR, NOW-1MONTH]</str>
+            <str name="f.sys_modified.facet.interval.set">[*, NOW-1YEAR]</str>
+
+            <str name="spellcheck">true</str>
+            <str name="spellcheck.dictionary">spellchecker</str>
+            <str name="spellcheck.count">1</str>
+            <str name="spellcheck.collate">true</str>
+        </lst>
+
+        <arr name="last-components">
+            <str>spellcheck_component</str>
         </arr>
+    </requestHandler>
+
+    <requestHandler name="/autocomplete_identifier" class="solr.SearchHandler">
+        <lst name="invariants">
+            <str name="q.op">AND</str>
+            <str name="qf">title title_autocomplete</str>
+            <str name="df">title title_autocomplete</str>
+            <str name="defType">edismax</str>
+            <str name="fl">title, sys_uri</str>
+            <str name="rows">10</str>
+            <str name="start">0</str>
+            <str name="facet">false</str>
+            <str name="echoParams">explicit</str>
+        </lst>
     </requestHandler>
 
     <requestHandler name="/related_content" class="solr.MoreLikeThisHandler" startup="lazy">
@@ -474,35 +513,7 @@
 
     <searchComponent name="tvComponent" class="solr.TermVectorComponent"/>
 
-    <searchComponent name="clustering" enable="${solr.clustering.enabled:false}"
-                     class="solr.clustering.ClusteringComponent">
-        <lst name="engine">
-            <str name="name">default</str>
-            <str name="carrot.algorithm">org.carrot2.clustering.lingo.LingoClusteringAlgorithm</str>
-            <str name="LingoClusteringAlgorithm.desiredClusterCountBase">20</str>
-            <str name="carrot.lexicalResourcesDir">clustering/carrot2</str>
-            <str name="MultilingualClustering.defaultLanguage">ENGLISH</str>
-        </lst>
-        <lst name="engine">
-            <str name="name">stc</str>
-            <str name="carrot.algorithm">org.carrot2.clustering.stc.STCClusteringAlgorithm</str>
-        </lst>
-    </searchComponent>
-
     <searchComponent name="terms" class="solr.TermsComponent"/>
-
-    <searchComponent name="autocomplete_component" class="solr.SuggestComponent">
-        <lst name="suggester">
-            <str name="name">autocomplete_identifier</str>
-            <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
-            <str name="dictionaryImpl">DocumentDictionaryFactory</str>
-            <str name="field">title_autocomplete</str>
-            <str name="payloadField">sys_uri</str>
-            <str name="contextField">sys_type</str>
-            <str name="suggestAnalyzerFieldType">text</str>
-            <str name="buildOnStartup">true</str>
-        </lst>
-    </searchComponent>
 
     <searchComponent name="spellcheck_component" class="solr.SpellCheckComponent">
         <lst name="spellchecker">

@@ -55,9 +55,14 @@
         </fieldType>
 
         <fieldType name="theme_hierarchy" class="solr.TextField" positionIncrementGap="100">
-            <analyzer>
+            <analyzer type="index">
                 <tokenizer class="solr.KeywordTokenizerFactory"/>
                 <filter class="solr.ManagedSynonymGraphFilterFactory" managed="hierarchy_theme"/>
+                <filter class="solr.FlattenGraphFilterFactory"/>
+            </analyzer>
+            <analyzer type="query">
+                <tokenizer class="solr.KeywordTokenizerFactory"/>
+                <filter class="solr.ManagedSynonymGraphFilterFactory" managed="hierarchy_theme_query"/>
                 <filter class="solr.FlattenGraphFilterFactory"/>
             </analyzer>
         </fieldType>

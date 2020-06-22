@@ -541,32 +541,33 @@ def update_hierarchy_theme(core_object):
 
     :rtype: None
     """
-    logging.info('')
-    logging.info('')
-    logging.info('managed resource: synonyms|hierarchy_theme')
+    for hierarchy_item in ['hierarchy_theme', 'hierarchy_theme_query']:
+        logging.info('')
+        logging.info('')
+        logging.info('managed resource: synonyms|{0}'.format(hierarchy_item))
 
-    hierarchy_theme = load_file_as_json(os.path.join(os.path.dirname(__file__), '..', 'resources', 'solr',
-                                                     'hierarchy_theme.json'))
-    current_hierarchy_theme = core_object.select_managed_synonyms('hierarchy_theme')
+        hierarchy_theme = load_file_as_json(os.path.join(os.path.dirname(__file__), '..', 'resources', 'solr',
+                                                         '{0}.json'.format(hierarchy_item)))
+        current_hierarchy_theme = core_object.select_managed_synonyms(hierarchy_item)
 
-    if not current_hierarchy_theme:
-        logging.info(' current:         0 synonyms')
-        logging.info(' adding:          %s synonyms', len(hierarchy_theme))
+        if not current_hierarchy_theme:
+            logging.info(' current:         0 synonyms')
+            logging.info(' adding:          %s synonyms', len(hierarchy_theme))
 
-        core_object.add_managed_synonyms('hierarchy_theme', hierarchy_theme)
-        return
+            core_object.add_managed_synonyms(hierarchy_item, hierarchy_theme)
+            return
 
-    logging.info(' current:         %s synonyms', len(current_hierarchy_theme))
+        logging.info(' current:         %s synonyms', len(current_hierarchy_theme))
 
-    themes_to_add = {key: value for key, value in hierarchy_theme.iteritems() 
-                     if key not in current_hierarchy_theme.keys()}
+        themes_to_add = {key: value for key, value in hierarchy_theme.iteritems()
+                         if key not in current_hierarchy_theme.keys()}
 
-    logging.info(' adding:          %s synonyms', len(themes_to_add))
+        logging.info(' adding:          %s synonyms', len(themes_to_add))
 
-    if len(themes_to_add) > 0:
-        core_object.add_managed_synonyms('hierarchy_theme', themes_to_add)
+        if len(themes_to_add) > 0:
+            core_object.add_managed_synonyms(hierarchy_item, themes_to_add)
 
-    logging.info('')
+        logging.info('')
 
 
 def update_resource(args):
@@ -708,11 +709,6 @@ def update_donl_search(args):
     logging.info('')
     logging.info('committing index changes')
     donl_search_core.index_documents([], commit=True)
-    logging.info('')
-
-    logging.info('reloading donl_search core')
-    donl_search_core.reload()
-    logging.info('')
     
     logging.info('')
     logging.info('donl_search core updated')
@@ -722,9 +718,8 @@ def get_dataset_title_suggestions(config):
     """
     Get title suggestions from DonlSearchCore
 
-    :rtype: Dict
+    :rtype: list of dict[str, any]
     """
-
     mappings = {
         'title': 'dataset',
         'sys_type': 'type',
@@ -737,8 +732,8 @@ def get_dataset_title_suggestions(config):
     dataset_mapper = DatasetMapper(mappings)
     search_core = DonlSearchCore(config['solr']['host'], config['authorization'])
     datasets = search_core.select_all_documents('sys_type:dataset', mappings.keys())
-
     title_suggestions = []
+
     for dataset in datasets:
         dataset = dataset_mapper.apply_map(dataset)
         dataset['weight'] = time.mktime(date_parser.parse(dataset['weight'][0]).timetuple()) if 'weight' \
@@ -761,7 +756,6 @@ def get_uri_suggestions(config, uri_field, suggester_field, donl_type):
     :rtype: list of dict[str, any]
     :return: The list of suggestions
     """
-
     search_core = DonlSearchCore(config['solr']['host'], config['authorization'])
     entities = search_core.select_all_documents('sys_type:{0}'.format(donl_type), [uri_field, 'facet_community'])
     uris = {}
