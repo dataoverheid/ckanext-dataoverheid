@@ -107,6 +107,7 @@
         <field name="res_hash" type="string" indexed="true" stored="true" multiValued="true"/>
         <field name="res_hash_algorithm" type="string" indexed="true" stored="true" multiValued="true"/>
         <field name="res_documentation" type="string" indexed="true" stored="true" multiValued="true"/>
+        <field name="res_distribution_type" type="string" indexed="true" stored="true" multiValued="true"/>
 
         <!-- Data.overheid.nl -->
         <field name="dataset_quality" type="int" indexed="true" stored="true"/>

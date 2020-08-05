@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 
+from ckan.common import config
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as tk
 import ckanext.dataoverheid.logic.converters as converters
@@ -9,13 +10,8 @@ import ckanext.dataoverheid.logic.helpers.transformers as transformers
 from ckanext.dataoverheid.logic.schemas import dcat_ap_donl, dataoverheid
 from ckanext.dataoverheid.logic.actions import catalog_as_rdf, package_as_rdf
 from ckanext.dataoverheid.logic.helpers.queries import wildcard_search
-from ckanext.dataoverheid.logic.authorizations import dataset_purge_authorization
-
-
-if tk.check_ckan_version('2.6', None):
-    from ckan.common import config
-else:
-    import pylons.config as config
+from ckanext.dataoverheid.logic.authorizations import \
+    dataset_purge_authorization
 
 
 class SchemaPlugin(plugins.SingletonPlugin, tk.DefaultDatasetForm):
@@ -25,7 +21,7 @@ class SchemaPlugin(plugins.SingletonPlugin, tk.DefaultDatasetForm):
 
     # IValidators
 
-    def get_validators(self):
+    def get_validators(self): # noqa
         return {
             'convert_list_to_string': converters.convert_list_to_string,
             'convert_string_to_list': converters.convert_string_to_list,
@@ -53,11 +49,13 @@ class SchemaPlugin(plugins.SingletonPlugin, tk.DefaultDatasetForm):
 
     # IDatasetForm
 
-    def is_fallback(self):
-        return tk.asbool(config.get('ckan.ckanext-dataoverheid.is_fallback', True))
+    def is_fallback(self): # noqa
+        return tk.asbool(config.get('ckan.ckanext-dataoverheid.is_fallback',
+                                    True))
 
-    def package_types(self):
-        return tk.aslist(config.get('ckan.ckanext-dataoverheid.package_types', []))
+    def package_types(self): # noqa
+        return tk.aslist(config.get('ckan.ckanext-dataoverheid.package_types',
+                                    []))
 
     def create_package_schema(self):
         schema = super(SchemaPlugin, self).create_package_schema()
@@ -82,10 +80,10 @@ class SchemaPlugin(plugins.SingletonPlugin, tk.DefaultDatasetForm):
 
     # IPackageController
 
-    def before_index(self, data_dict):
+    def before_index(self, data_dict): # noqa
         return transformers.transform_multivalued_properties(data_dict)
 
-    def after_show(self, context, data_dict):
+    def after_show(self, context, data_dict): # noqa
         return context, transformers.remove_properties(data_dict)
 
 
@@ -95,7 +93,7 @@ class RDFPlugin(plugins.SingletonPlugin):
 
     # IActions
 
-    def get_actions(self):
+    def get_actions(self): # noqa
         return {
             'rdf_catalog_show': catalog_as_rdf,
             'rdf_package_show': package_as_rdf
@@ -103,19 +101,22 @@ class RDFPlugin(plugins.SingletonPlugin):
 
     # IRoutes
 
-    def before_map(self, _map):
+    def before_map(self, _map): # noqa
         controller = 'ckanext.dataoverheid.logic.controllers:RDFController'
         output_requirements = {'output': 'xml|rdf|ttl|n3'}
 
-        _map.connect('rdf_catalog', '/catalog.{output}', controller=controller, action='catalog_as_rdf',
+        _map.connect('rdf_catalog', '/catalog.{output}', controller=controller,
+                     action='catalog_as_rdf', requirements=output_requirements)
+        _map.connect('rdf_package', '/dataset/{package_id}.{output}',
+                     controller=controller, action='package_as_rdf',
                      requirements=output_requirements)
-        _map.connect('rdf_package', '/dataset/{package_id}.{output}', controller=controller,
-                     action='package_as_rdf', requirements=output_requirements)
 
-        _map.connect('rdf_api_catalog', '/api/3/rdf/catalog.{output}', controller=controller, action='catalog_as_rdf',
+        _map.connect('rdf_api_catalog', '/api/3/rdf/catalog.{output}',
+                     controller=controller, action='catalog_as_rdf',
                      requirements=output_requirements)
-        _map.connect('rdf_api_package', '/api/3/rdf/{package_id}.{output}', controller=controller,
-                     action='package_as_rdf', requirements=output_requirements)
+        _map.connect('rdf_api_package', '/api/3/rdf/{package_id}.{output}',
+                     controller=controller, action='package_as_rdf',
+                     requirements=output_requirements)
 
         return _map
 
@@ -127,20 +128,20 @@ class InterfacePlugin(plugins.SingletonPlugin):
 
     # IConfigurer
 
-    def update_config(self, config):
+    def update_config(self, config): # noqa
         tk.add_template_directory(config, 'templates')
         tk.add_resource('fanstatic', 'dataoverheid')
 
     # ITemplateHelpers
 
-    def get_helpers(self):
+    def get_helpers(self): # noqa
         return {
             'wildcard_search': wildcard_search
         }
 
     # IFacets
 
-    def dataset_facets(self, facets_dict, package_type):
+    def dataset_facets(self, facets_dict, package_type): # noqa
         facets_dict.pop('organization', None)
         facets_dict['organization'] = tk._('CKAN Organization')
 
@@ -152,7 +153,7 @@ class AuthorizationPlugin(plugins.SingletonPlugin):
 
     # IAuthFunctions
 
-    def get_auth_functions(self):
+    def get_auth_functions(self): # noqa
         return {
             'dataset_purge': dataset_purge_authorization
         }

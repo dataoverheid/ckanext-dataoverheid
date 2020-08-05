@@ -1,5 +1,7 @@
 * text=auto
 eol=lf
 
-.editorconfig           export-ignore
-dev-requirements.txt    export-ignore
+/.editorconfig           export-ignore
+/.gitattributes          export-ignore
+/.gitignore              export-ignore
+/dev-requirements.txt    export-ignore

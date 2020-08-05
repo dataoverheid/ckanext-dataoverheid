@@ -31,6 +31,7 @@ Assuming a standard (empty) CKAN installation on a Ubuntu server; follow these s
 
 ### CKAN
 From your terminal of choice:
+
 ```bash
 . /usr/lib/ckan/default/bin/activate
 cd /usr/lib/ckan/default/src/

@@ -16,7 +16,8 @@ class SolrCore:
 
         :param str            solr_host: The full URL to the Solr installation
         :param str            core_name: The name of the Solr core
-        :param dict[str, str] auth:      A dictionary containing a 'username' and a 'password' key used to provide
+        :param dict[str, str] auth:      A dictionary containing a 'username'
+                                         and a 'password' key used to provide
                                          BasicAuth credentials to the Solr host
 
         :rtype: SolrCore
@@ -26,8 +27,10 @@ class SolrCore:
         self.authentication = None
 
         if auth:
-            encoded_auth = '{0}:{1}'.format(auth['username'], auth['password']).encode('base64')
-            self.authentication = 'Basic {0}'.format(encoded_auth).replace('\n', '')
+            basic_auth = auth['username'] + ':' + auth['password']
+            basic_auth = 'Basic ' + basic_auth.encode('base64')
+
+            self.authentication = basic_auth.replace('\n', '')
 
     def document_count(self, selector='*:*'):
         """
@@ -36,7 +39,8 @@ class SolrCore:
         :param str selector: The 'q' parameter of a Solr query
 
         :rtype:  int|None
-        :return: The amount of documents that match the query, or None if the request failed
+        :return: The amount of documents that match the query, or None if the
+                 request failed
         """
         return self.select_documents({
             'q': selector,
@@ -46,29 +50,38 @@ class SolrCore:
 
     def select_documents(self, query):
         """
-        Select and return documents from the Solr index that match the given query.
+        Select and return documents from the Solr index that match the given
+        query.
 
-        :param dict[str, Any] query: The Solr query to perform to identify the documents to select
+        :param dict[str, Any] query: The Solr query to perform to identify the
+                                     documents to select
 
-        :rtype:  dict[str, Any]|None
-        :return: The response as a JSON dictionary, or None if the request failed
+        :rtype: dict[str, Any]|None
+        :return: The response as a JSON dictionary, or None if the request
+                 failed
         """
-        response = self._execute_request(self._create_core_request('select', {'params': query}))
+        response = self._execute_request(self._create_core_request('select', {
+            'params': query
+        }))
 
         if not response:
             return None
 
         return json.loads(response.read())
 
-    def select_all_documents(self, fq=None, fl=None, documents_per_request=1000):
+    def select_all_documents(self, fq=None, fl=None,
+                             documents_per_request=1000):
         """
-        Selects all the documents from the Solr core and returns them as a JSON object.
+        Selects all the documents from the Solr core and returns them as a JSON
+        object.
 
-        :param str         fq:                    The filter query to apply
-        :param list of str fl:                    The fields to select per document, defaults to '*'
-        :param int         documents_per_request: The amount of documents to retrieve per request
+        :param str fq: The filter query to apply
+        :param list of str fl: The fields to select per document, defaults to
+                               '*'
+        :param int documents_per_request: The amount of documents to  retrieve
+                   per request
 
-        :rtype:  list of dict[str, Any]
+        :rtype: list of dict[str, Any]
         :return: The complete list of documents selected from the Solr core
         """
         document_count = self.document_count('*:*')
@@ -84,7 +97,9 @@ class SolrCore:
                 'wt': 'json'
             }
             query = dict((k, v) for k, v in query.iteritems() if v is not None)
-            selected_documents.append(self.select_documents(query)['response']['docs'])
+            selected_documents.append(
+                self.select_documents(query)['response']['docs']
+            )
 
         return [document for batch in selected_documents for document in batch]
 
@@ -92,34 +107,42 @@ class SolrCore:
         """
         Add the given documents to the index of the Solr core.
 
-        :param list of dict[str, Any] documents:  The list of dictionaries that represent the documents to index
-        :param bool                   commit:     Whether or not to commit the changes made to the Solr core to the
-                                                  index
-        :param int                    batch_size: The amount of documents to send to Solr per batch, defaults to 200
-
+        :param list of dict[str, Any] documents: The list of dictionaries that
+                                                 represent the documents to
+                                                 index
+        :param bool commit: Whether or not to commit the changes made to the
+                            Solr core to the  index
+        :param int batch_size: The amount of documents to send to Solr per
+                               batch, defaults to 200
         :rtype:  bool
         :return: Whether or not the documents were added to the index
         """
-        batches = [documents[i:i+batch_size] for i in range(0, len(documents), batch_size)]
+        batches = [documents[i:i+batch_size]
+                   for i in range(0, len(documents), batch_size)]
 
-        [self._execute_request(self._create_core_request('update{0}'.format('?commit=true' if commit else ''), batch))
+        [self._execute_request(self._create_core_request(
+            'update{0}'.format('?commit=true' if commit else ''), batch))
          for batch in batches]
 
     def delete_documents(self, query, commit=True):
         """
-        Delete all the documents from the Solr core's index that match the given query.
+        Delete all the documents from the Solr core's index that match the given
+        query.
 
-        :param str  query:  The Solr query to identify the documents to delete
-        :param bool commit: Whether or not to write the changes to the Solr index
-
+        :param str query: The Solr query to identify the documents to delete
+        :param bool commit: Whether or not to write the changes to the Solr
+                            index
         :rtype:  bool
-        :return: Whether or not the documents that match the query were deleted from the Solr core
+        :return: Whether or not the documents that match the query were deleted
+                 from the Solr core
         """
-        logging.info(' deleting:        %d documents from %s', self.document_count(query), self.core_name)
+        logging.info(' deleting:        %d documents from %s',
+                     self.document_count(query), self.core_name)
 
-        return self._execute_request(self._create_core_request('update{0}'.format('?commit=true' if commit else ''), {
-            'delete': {'query': query}
-        })) is not None
+        return self._execute_request(self._create_core_request(
+            'update{0}'.format('?commit=true' if commit else ''),
+            {'delete': {'query': query}})
+        ) is not None
 
     def reload(self):
         """
@@ -130,29 +153,34 @@ class SolrCore:
         """
         logging.info(' reloading:       %s', self.core_name)
 
-        return self._execute_request(self._create_solr_request('admin/cores?action=RELOAD&core={0}'
-                                                               .format(self.core_name))) is not None
+        return self._execute_request(self._create_solr_request(
+            'admin/cores?action=RELOAD&core={0}'.format(self.core_name)
+        )) is not None
 
     def _create_core_request(self, request, json_data=None):
         """
-        Creates a urllib2 Request object based on the given request and possible JSON post data.
+        Creates a urllib2 Request object based on the given request and possible
+        JSON post data.
 
-        :param str                        request:   The request, containing only the segments after
-                                                     '{solr_host}/{solr_core}/'
-        :param dict[str, Any]|list of str json_data: The optional JSON data to include in the request
-
+        :param str request: The request, containing only the segments after
+                            '{solr_host}/{solr_core}/'
+        :param dict[str, Any]|list of str json_data: The optional JSON data to
+                                                     include in the request
         :rtype:  urllib2.Request
         :return: The created urllib2 Request object
         """
-        return self._create_solr_request('{0}/{1}'.format(self.core_name, request), json_data)
+        return self._create_solr_request('{0}/{1}'.format(self.core_name,
+                                                          request), json_data)
 
     def _create_solr_request(self, request, json_data=None):
         """
-        Creates a urllib2 Request object based on the given Solr host and the request string and possible JSON body.
+        Creates a urllib2 Request object based on the given Solr host and the
+        request string and possible JSON body.
 
-        :param str                        request:   The request, containing only the segments after '{solr_host}/'
-        :param dict[str, Any]|list of str json_data: The optional JSON data to include in the request
-
+        :param str request: The request, containing only the segments after
+                            '{solr_host}/'
+        :param dict[str, Any]|list of str json_data: The optional JSON data to
+                                                     include in the request
         :rtype:  urllib2.Request
         :return: The created urllib2 Request object
         """
@@ -170,12 +198,12 @@ class SolrCore:
     @staticmethod
     def _execute_request(request, method=None):
         """
-        Execute a request against the Solr installation. The HTTP method will be either GET or POST depending on the
-        presence of data in the request. if 'method' is provided, the given method will be used instead.
+        Execute a request against the Solr installation. The HTTP method will be
+        either GET or POST depending on the presence of data in the request. if
+        'method' is provided, the given method will be used instead.
 
         :param urllib2.Request request: The request object to execute
-        :param str             method:  Which HTTP method to use
-
+        :param str method: Which HTTP method to use
         :rtype:  Any|None
         :return: The response of the request, or None if the request failed
         """
@@ -203,24 +231,27 @@ class DonlSearchCore(SolrCore):
         """
         Initialize a DonlSearchCore instance.
 
-        :param str            solr_host:      The full URL to the Solr installation
-        :param dict[str, str] authentication: A dictionary containing a 'username' and a 'password' key used to provide
-                                              BasicAuth credentials to the Solr host
-
+        :param str solr_host: The full URL to the Solr installation
+        :param dict[str, str] authentication: A dictionary containing a
+                                              'username' and a 'password' key
+                                              used to provide BasicAuth
+                                              credentials to the Solr host
         :rtype: DonlSearchCore
         """
         SolrCore.__init__(self, solr_host, 'donl_search', authentication)
 
     def select_managed_stopwords(self, name):
         """
-        Retrieve all the managed stopwords for the given name from the Solr core.
+        Retrieve all the managed stopwords for the given name from the Solr
+        core.
 
         :param   str name: The name of the stopwords list
-
         :rtype:  list of str|None
         :return: The list of managed stopwords, or None if the request failed
         """
-        response = self._execute_request(self._create_core_request('schema/analysis/stopwords/{0}'.format(name)))
+        response = self._execute_request(self._create_core_request(
+            'schema/analysis/stopwords/{0}'.format(name)
+        ))
 
         if not response:
             return None
@@ -229,16 +260,17 @@ class DonlSearchCore(SolrCore):
 
     def add_managed_stopwords(self, name, values):
         """
-        Add the given values as stopwords to the managed stopwords list with the given name.
+        Add the given values as stopwords to the managed stopwords list with the
+        given name.
 
-        :param   str         name:   The name of the managed list
-        :param   list of str values: The list of values to add
-
+        :param str name: The name of the managed list
+        :param list of str values: The list of values to add
         :rtype:  bool
         :return: Whether or not the stopwords were added successfully
         """
-        return self._execute_request(self._create_core_request('schema/analysis/stopwords/{0}'
-                                                               .format(name), values)) is not None
+        return self._execute_request(self._create_core_request(
+            'schema/analysis/stopwords/{0}'.format(name), values)
+        ) is not None
 
     def remove_managed_stopwords(self, name, values):
         """
@@ -246,23 +278,25 @@ class DonlSearchCore(SolrCore):
 
         :param str         name:   The name of the managed list
         :param list of str values: The list of stopwords to remove
-
         :rtype: None
         """
-        [self._execute_request(self._create_core_request('schema/analysis/stopwords/{0}/{1}'.format(name, value)),
-                               method='DELETE') for value in values]
+        [self._execute_request(self._create_core_request(
+            'schema/analysis/stopwords/{0}/{1}'.format(name, value)
+         ), method='DELETE') for value in values]
 
     def select_managed_synonyms(self, name):
         """
         Retrieve the synonyms managed by Solr under the given name.
 
         :param str name: The name of the managed list
-
-        :rtype:  dict[str, list of str]|None
-        :return: The synonym dictionary managed by Solr containing the terms as keys and their synonyms as a list of
+        :rtype: dict[str, list of str]|None
+        :return: The synonym dictionary managed by Solr containing the terms as
+                 keys and their synonyms as a list of
                  strings, or None if the request failed
         """
-        response = self._execute_request(self._create_core_request('schema/analysis/synonyms/{0}'.format(name)))
+        response = self._execute_request(self._create_core_request(
+            'schema/analysis/synonyms/{0}'.format(name)
+        ))
 
         if not response:
             return None
@@ -273,26 +307,28 @@ class DonlSearchCore(SolrCore):
         """
         Add the given synonyms to the managed synonym list in Solr.
 
-        :param str                    name:   The name of the managed list
-        :param dict[str, list of str] values: A list of dictionaries containing synonyms to introduce
-
+        :param str name: The name of the managed list
+        :param dict[str, list of str] values: A list of dictionaries containing
+                                              synonyms to introduce
         :rtype:  bool
         :return: Whether or not the synonyms were added to the list
         """
-        return self._execute_request(self._create_core_request('schema/analysis/synonyms/{0}'
-                                                               .format(name), values)) is not None
+        return self._execute_request(self._create_core_request(
+            'schema/analysis/synonyms/{0}'.format(name), values
+        )) is not None
 
     def remove_managed_synonyms(self, name, values):
         """
-        Remove the given synonyms from the managed synonyms with the given name in Solr.
+        Remove the given synonyms from the managed synonyms with the given name
+        in Solr.
 
-        :param str  name:   The name of the managed list
+        :param str name: The name of the managed list
         :param list values: The list of synonyms to remove
-
         :rtype: None
         """
-        [self._execute_request(self._create_core_request('schema/analysis/synonyms/{0}/{1}'.format(name, value)),
-                               method='DELETE') for value in values]
+        [self._execute_request(self._create_core_request(
+            'schema/analysis/synonyms/{0}/{1}'.format(name, value)
+         ), method='DELETE') for value in values]
 
 
 class DonlSuggesterCore(SolrCore):
@@ -300,10 +336,11 @@ class DonlSuggesterCore(SolrCore):
         """
         Initialize a DonlSuggesterCore instance.
 
-        :param str            solr_host:      The full URL to the Solr installation
-        :param dict[str, str] authentication: A dictionary containing a 'username' and a 'password' key used to provide
-                                              BasicAuth credentials to the Solr host
-
+        :param str solr_host: The full URL to the Solr installation
+        :param dict[str, str] authentication: A dictionary containing a
+                                              'username' and a 'password' key
+                                              used to provide BasicAuth
+                                              credentials to the Solr host
         :rtype: DonlSuggesterCore
         """
         SolrCore.__init__(self, solr_host, 'donl_suggester', authentication)
@@ -317,7 +354,9 @@ class DonlSuggesterCore(SolrCore):
         :rtype:  bool
         :return: Whether or not the suggestions were built
         """
-        return self._execute_request(self._create_solr_request('{0}?suggest.build=true'.format(handler))) is not None
+        return self._execute_request(self._create_solr_request(
+            '{0}?suggest.build=true'.format(handler)
+        )) is not None
 
 
 class DatasetMapper:
@@ -325,9 +364,9 @@ class DatasetMapper:
         """
         Initializes a DatasetMapper instance.
 
-        :param dict[str, str] mappings:           The source > target key mapping
-        :param dict[str, Any]|None fields_to_add: Which key: value pairs to add to the mapped datasets
-
+        :param dict[str, str] mappings: The source > target key mapping
+        :param dict[str, Any]|None fields_to_add: Which key: value pairs to add
+                                                  to the mapped datasets
         :rtype: DatasetMapper
         """
         self.mappings = mappings
@@ -342,14 +381,15 @@ class DatasetMapper:
         - All properties are mapped according to the given map
         - Keys not present in the mapping will be stripped
         - Boolean `False` values are stripped
-        - Boolean `True` values are converted to strings with their keys as values
+        - Boolean `True` values are converted to strings with their keys as
+          values
         - All values will be converted to lists
         - Each `self.fields_to_add` key: value pair is added to the dataset
 
         :param dict[str, Any] dataset: The dataset to apply the mapping to
-
         :rtype:  dict[str, Any]
-        :return: A dictionary containing all the mapped attributes from the given dataset
+        :return: A dictionary containing all the mapped attributes from the
+                 given dataset
         """
         ignore_list = []
 
@@ -370,10 +410,12 @@ class DatasetMapper:
                 continue
 
             target_key = self.mappings[key]
-            document[target_key] = [] if target_key not in document else document[target_key]
+            document[target_key] = [] if target_key not in document \
+                else document[target_key]
 
             if isinstance(value, list):
-                [document[target_key].append(single_value) for single_value in value]
+                [document[target_key].append(single_value)
+                 for single_value in value]
             else:
                 document[target_key].append(value)
 
@@ -389,7 +431,6 @@ def load_file(file_location):
     Opens a given file and returns its contents.
 
     :param str file_location: The absolute path to the file
-
     :rtype:  str
     :return: The contents of the file
     """
@@ -404,7 +445,6 @@ def load_file_as_json(file_location):
     Opens a file, parses its contents as JSON and returns the parsed JSON.
 
     :param str file_location: The absolute path to the file
-
     :rtype:  dict[str, Any]|list of Any
     :return: The JSON contents of the file as a dict or list
     """
@@ -418,36 +458,41 @@ def load_file_as_json(file_location):
 
 def load_config():
     """
-    Loads the contents of the configuration file of the ckanext-dataoverheid extension and returns it as a JSON object.
+    Loads the contents of the configuration file of the ckanext-dataoverheid
+    extension and returns it as a JSON object.
 
-    :rtype:  dict[str, Any]
-    :return: The JSON encoded contents of the configuration file located at the root of the ckanext-dataoverheid
-             extension.
+    :rtype: dict[str, Any]
+    :return: The JSON encoded contents of the configuration file located at the
+             root of the ckanext-dataoverheid extension.
     """
     extension_root = os.path.join(os.path.dirname(__file__), '..', '..', '..')
-    config_contents = load_file_as_json(os.path.join(extension_root, 'config.json'))
-    config_contents['authorization'] = load_file_as_json(os.path.join(extension_root, 'authorization.json'))
+    config_contents = load_file_as_json(os.path.join(extension_root,
+                                                     'config.json'))
+    config_contents['authorization'] = load_file_as_json(
+        os.path.join(extension_root, 'authorization.json')
+    )
 
     logging.info('')
-    logging.info('config:           %s', os.path.join(extension_root, 'config.json'))
+    logging.info('config:           %s', os.path.join(extension_root,
+                                                      'config.json'))
 
     return config_contents
 
 
 def update_stopwords_nl(core_object):
     """
-    Update the given Solr core such that its managed stopwords resource with name 'dutch' contains the appropriate
-    stopwords.
+    Update the given Solr core such that its managed stopwords resource with
+    name 'dutch' contains the appropriate stopwords.
 
     :param DonlSearchCore core_object: The core containing the dutch stopwords.
-
     :rtype: none
     """
     logging.info('')
     logging.info('')
     logging.info('managed resource: stopwords|dutch')
 
-    stopwords_nl = load_file_as_json(os.path.join(os.path.dirname(__file__), '..', 'resources', 'solr',
+    stopwords_nl = load_file_as_json(os.path.join(os.path.dirname(__file__),
+                                                  '..', 'resources', 'solr',
                                                   'stopwords_nl.json'))
     current_stopwords_nl = core_object.select_managed_stopwords('dutch')
 
@@ -472,11 +517,11 @@ def update_stopwords_nl(core_object):
 
 def update_uri_synonyms(core_object):
     """
-    Update the given Solr core such that its managed synonyms resource with name 'url_nl' and 'uri_en' contains the
-    appropriate synonyms.
+    Update the given Solr core such that its managed synonyms resource with name
+    'url_nl' and 'uri_en' contains the appropriate synonyms.
 
-    :param DonlSearchCore core_object: The core containing the uri_nl and uri_en synonym lists.
-
+    :param DonlSearchCore core_object: The core containing the uri_nl and uri_en
+                                       synonym lists.
     :rtype: None
     """
     uri_synonyms = {
@@ -484,25 +529,36 @@ def update_uri_synonyms(core_object):
         'uri_en': {}
     }
 
-    vocabulary_dir = os.path.join(os.path.dirname(__file__), '..', 'resources', 'vocabularies')
-    taxonomy_dir = os.path.join(os.path.dirname(__file__), '..', 'resources', 'taxonomies')
+    vocabulary_dir = os.path.join(os.path.dirname(__file__), '..', 'resources',
+                                  'vocabularies')
+    taxonomy_dir = os.path.join(os.path.dirname(__file__), '..', 'resources',
+                                'taxonomies')
 
     for vocabulary_file in os.listdir(vocabulary_dir):
-        if vocabulary_file.endswith('.json') and not vocabulary_file == 'ckan_license.json':
+        is_license = vocabulary_file == 'ckan_license.json'
+
+        if vocabulary_file.endswith('.json') and not is_license:
+            filepath = os.path.join(vocabulary_dir, vocabulary_file)
+
             if vocabulary_file == 'overheid_license.json':
-                for license in load_file_as_json(os.path.join(vocabulary_dir, vocabulary_file)):
-                    uri_synonyms['uri_nl'][license.get('url')] = license.get('title')
-                    uri_synonyms['uri_en'][license.get('url')] = license.get('title')
+                for license in load_file_as_json(filepath):
+                    key = license.get('url')
+                    title = license.get('title')
+
+                    uri_synonyms['uri_nl'][key] = title
+                    uri_synonyms['uri_en'][key] = title
 
                 continue
 
-            for uri, properties in load_file_as_json(os.path.join(vocabulary_dir, vocabulary_file)).iteritems():
+            for uri, properties in load_file_as_json(filepath).iteritems():
                 uri_synonyms['uri_nl'][uri] = properties['labels']['nl-NL']
                 uri_synonyms['uri_en'][uri] = properties['labels']['en-US']
 
     for taxonomy_file in os.listdir(taxonomy_dir):
         if taxonomy_file.endswith('.json'):
-            for uri, properties in load_file_as_json(os.path.join(taxonomy_dir, taxonomy_file)).iteritems():
+            filepath = os.path.join(taxonomy_dir, taxonomy_file)
+
+            for uri, properties in load_file_as_json(filepath).iteritems():
                 uri_synonyms['uri_nl'][uri] = properties['label_nl']
                 uri_synonyms['uri_en'][uri] = properties['label_en']
 
@@ -514,14 +570,16 @@ def update_uri_synonyms(core_object):
 
         if not current_uri_synonyms:
             logging.info(' current:         0 synonyms')
-            logging.info(' adding:          %s synonyms', len(uri_synonyms[lang]))
+            logging.info(' adding:          %s synonyms',
+                         len(uri_synonyms[lang]))
 
             core_object.add_managed_synonyms(lang, uri_synonyms[lang])
             continue
 
         logging.info(' current:         %s synonyms', len(current_uri_synonyms))
 
-        synonyms_to_add = {key: value for key, value in uri_synonyms[lang].iteritems()
+        synonyms_to_add = {key: value
+                           for key, value in uri_synonyms[lang].iteritems()
                            if key not in current_uri_synonyms.keys()}
 
         logging.info(' adding:          %s synonyms', len(synonyms_to_add))
@@ -534,11 +592,11 @@ def update_uri_synonyms(core_object):
 
 def update_hierarchy_theme(core_object):
     """
-    Update the hierarchy_theme Solr managed synonym resource which is part of the Solr core which the core_object
-    represents.
+    Update the hierarchy_theme Solr managed synonym resource which is part of
+    the Solr core which the core_object represents.
 
-    :param DonlSearchCore core_object: The core containing the hierarchy_theme synonym list
-
+    :param DonlSearchCore core_object: The core containing the hierarchy_theme
+                                       synonym list
     :rtype: None
     """
     for hierarchy_item in ['hierarchy_theme', 'hierarchy_theme_query']:
@@ -546,9 +604,12 @@ def update_hierarchy_theme(core_object):
         logging.info('')
         logging.info('managed resource: synonyms|{0}'.format(hierarchy_item))
 
-        hierarchy_theme = load_file_as_json(os.path.join(os.path.dirname(__file__), '..', 'resources', 'solr',
-                                                         '{0}.json'.format(hierarchy_item)))
-        current_hierarchy_theme = core_object.select_managed_synonyms(hierarchy_item)
+        hierarchy_theme = load_file_as_json(
+            os.path.join(os.path.dirname(__file__), '..', 'resources', 'solr',
+                         '{0}.json'.format(hierarchy_item)))
+        current_hierarchy_theme = core_object.select_managed_synonyms(
+            hierarchy_item
+        )
 
         if not current_hierarchy_theme:
             logging.info(' current:         0 synonyms')
@@ -557,9 +618,11 @@ def update_hierarchy_theme(core_object):
             core_object.add_managed_synonyms(hierarchy_item, hierarchy_theme)
             return
 
-        logging.info(' current:         %s synonyms', len(current_hierarchy_theme))
+        logging.info(' current:         %s synonyms',
+                     len(current_hierarchy_theme))
 
-        themes_to_add = {key: value for key, value in hierarchy_theme.iteritems()
+        themes_to_add = {key: value
+                         for key, value in hierarchy_theme.iteritems()
                          if key not in current_hierarchy_theme.keys()}
 
         logging.info(' adding:          %s synonyms', len(themes_to_add))
@@ -572,20 +635,21 @@ def update_hierarchy_theme(core_object):
 
 def update_resource(args):
     """
-    Updates one of the resources [ 'stopwords_nl', 'uri_synonyms', 'hierarchy_theme' ] based on the resource key present
-    in the args argument.
+    Updates one of the resources [ 'stopwords_nl', 'uri_synonyms',
+    'hierarchy_theme' ] based on the resource key present in the args argument.
 
-    If the `--reload` argument is provided then the `donl_search` core will be reloaded after the operation.
+    If the `--reload` argument is provided then the `donl_search` core will be
+    reloaded after the operation.
 
     :param dict[str, Any] args: The input arguments sent via the commandline
-
     :rtype: None
     """
     logging.info('action:           %s', args['action'])
     logging.info('input:            resource:%s', input_arguments['resource'])
 
     config = load_config()
-    search_core = DonlSearchCore(config['solr']['host'], config['authorization'])
+    search_core = DonlSearchCore(config['solr']['host'],
+                                 config['authorization'])
 
     action_map = {
         'stopwords_nl': update_stopwords_nl,
@@ -599,20 +663,23 @@ def update_resource(args):
         logging.info('donl_search core reloaded')
 
 
-def determine_datasets_to_update(index_type, dataset_mapping, mapped_ckan_datasets, mapped_solr_datasets):
+def determine_datasets_to_update(index_type, dataset_mapping,
+                                 mapped_ckan_datasets, mapped_solr_datasets):
     """
-    Determines which datasets from the `donl_dataset` core are eligible for updating in the `donl_search` core. If
-    `index_type` equals False all datasets will be updated. When `index_type` is True only the datasets for which the
-    `sys_modified` field is newer than the `sys_modified` field of the dataset in the `donl_search` core will be
-    updated.
+    Determines which datasets from the `donl_dataset` core are eligible for
+    updating in the `donl_search` core. If `index_type` equals False all
+    datasets will be updated. When `index_type` is True only the datasets for
+    which the `sys_modified` field is newer than the `sys_modified` field of the
+    dataset in the `donl_search` core will be updated.
 
-    :param bool           index_type:           What kind of index update to run, True = delta, False = full
-    :param dict[str, str] dataset_mapping:      The source > target key mapping
+    :param bool index_type: What kind of index update to run, True = delta,
+                            False = full
+    :param dict[str, str] dataset_mapping: The source > target key mapping
     :param dict[str, Any] mapped_ckan_datasets: The (mapped) datasets from CKAN
     :param dict[str, Any] mapped_solr_datasets: The (mapped) datasets from Solr
-
     :rtype:  dict[str, dict[str, Any]]
-    :return: The dictionary of datasets which should be updated in the `donl_search` core
+    :return: The dictionary of datasets which should be updated in the
+             `donl_search` core
     """
     datasets_to_update = {}
 
@@ -631,7 +698,11 @@ def determine_datasets_to_update(index_type, dataset_mapping, mapped_ckan_datase
 
         date_key = dataset_mapping['metadata_modified']
 
-        if date_key not in dataset.keys() or date_key not in ckan_dataset.keys():
+        if date_key not in dataset.keys():
+            datasets_to_update[key] = ckan_dataset
+            continue
+
+        if date_key not in ckan_dataset.keys():
             datasets_to_update[key] = ckan_dataset
             continue
 
@@ -646,51 +717,64 @@ def determine_datasets_to_update(index_type, dataset_mapping, mapped_ckan_datase
 
 def update_donl_search(args):
     """
-    Synchronizes the donl_search Solr core with the donl_dataset Solr core such that all datasets present in the
-    donl_dataset core are also indexed as documents in the donl_search core.
+    Synchronizes the donl_search Solr core with the donl_dataset Solr core such
+    that all datasets present in the donl_dataset core are also indexed as
+    documents in the donl_search core.
 
-    If the `--delta` flag is provided, only the modified datasets will be synchronized, otherwise *all* datasets from
-    the `donl_dataset` core will be updated in the `donl_search` core, regardless if changes were detected.
+    If the `--delta` flag is provided, only the modified datasets will be
+    synchronized, otherwise *all* datasets from the `donl_dataset` core will be
+    updated in the `donl_search` core, regardless if changes were detected.
 
     :param dict[str, Any] args: The input arguments sent via the commandline
-
     :rtype: None
     """
     logging.info('action:           %s', args['action'])
-    logging.info('input:            index:%s', 'delta' if args['delta'] is True else 'full')
+    logging.info('input:            index:%s',
+                 'delta' if args['delta'] is True else 'full')
 
     config = load_config()
     dataset_mapping = config['solr']['mappings']['donl_dataset_to_donl_search']
 
-    donl_dataset_core = SolrCore(config['solr']['host'], 'donl_dataset', config['authorization'])
-    donl_search_core = DonlSearchCore(config['solr']['host'], config['authorization'])
+    donl_dataset_core = SolrCore(config['solr']['host'], 'donl_dataset',
+                                 config['authorization'])
+    donl_search_core = DonlSearchCore(config['solr']['host'],
+                                      config['authorization'])
 
     logging.info('')
 
-    ckan_datasets = donl_dataset_core.select_all_documents(fl=dataset_mapping.keys())
+    ckan_datasets = donl_dataset_core.select_all_documents(
+        fl=dataset_mapping.keys()
+    )
     logging.info('ckan datasets:    %s', len(ckan_datasets))
 
     solr_datasets = donl_search_core.select_all_documents(fq='sys_type:dataset')
     logging.info('solr datasets:    %s', len(solr_datasets))
 
     mapper = DatasetMapper(dataset_mapping, {'sys_type': 'dataset'})
-    mapped_ckan_datasets = {dataset['id']: mapper.apply_map(dataset) for dataset in ckan_datasets}
-    mapped_solr_datasets = {dataset['sys_id']: dataset for dataset in solr_datasets}
+    mapped_ckan_datasets = {dataset['id']: mapper.apply_map(dataset)
+                            for dataset in ckan_datasets}
+    mapped_solr_datasets = {dataset['sys_id']: dataset
+                            for dataset in solr_datasets}
 
     logging.info('')
     logging.info('datasets mapped to donl_search schema')
 
-    datasets_to_create = {dataset_key: dataset for dataset_key, dataset in mapped_ckan_datasets.iteritems()
+    datasets_to_create = {dataset_key: dataset for dataset_key, dataset
+                          in mapped_ckan_datasets.iteritems()
                           if dataset_key not in mapped_solr_datasets.keys()}
-    datasets_to_update = determine_datasets_to_update(args['delta'], dataset_mapping, mapped_ckan_datasets,
+    datasets_to_update = determine_datasets_to_update(args['delta'],
+                                                      dataset_mapping,
+                                                      mapped_ckan_datasets,
                                                       mapped_solr_datasets)
-    datasets_to_delete = {dataset_key: dataset for dataset_key, dataset in mapped_solr_datasets.iteritems()
+    datasets_to_delete = {dataset_key: dataset for dataset_key, dataset
+                          in mapped_solr_datasets.iteritems()
                           if dataset_key not in mapped_ckan_datasets.keys()}
 
     logging.info('')
     logging.info('analysis:')
     logging.info(' new:             %s', len(datasets_to_create))
-    logging.info(' update:          %s (%s)', len(datasets_to_update), 'delta' if args['delta'] is True else 'full')
+    logging.info(' update:          %s (%s)', len(datasets_to_update),
+                 'delta' if args['delta'] is True else 'full')
     logging.info(' remove:          %s', len(datasets_to_delete))
     logging.info('')
 
@@ -703,7 +787,8 @@ def update_donl_search(args):
     logging.info(' updated:         %s', len(datasets_to_update))
 
     for sys_id in datasets_to_delete.keys():
-        donl_search_core.delete_documents('sys_id:{0}'.format(sys_id), commit=False)
+        donl_search_core.delete_documents('sys_id:{0}'.format(sys_id),
+                                          commit=False)
     logging.info(' deleted:         %s', len(datasets_to_delete))
 
     logging.info('')
@@ -730,14 +815,17 @@ def get_dataset_title_suggestions(config):
     }
 
     dataset_mapper = DatasetMapper(mappings)
-    search_core = DonlSearchCore(config['solr']['host'], config['authorization'])
-    datasets = search_core.select_all_documents('sys_type:dataset', mappings.keys())
+    search_core = DonlSearchCore(config['solr']['host'],
+                                 config['authorization'])
+    datasets = search_core.select_all_documents('sys_type:dataset',
+                                                mappings.keys())
     title_suggestions = []
 
     for dataset in datasets:
         dataset = dataset_mapper.apply_map(dataset)
-        dataset['weight'] = time.mktime(date_parser.parse(dataset['weight'][0]).timetuple()) if 'weight' \
-                                                                                                in dataset else 0
+        dataset['weight'] = time.mktime(
+            date_parser.parse(dataset['weight'][0]).timetuple()
+        ) if 'weight' in dataset else 0
         dataset['language'] = ['nl', 'en']
         title_suggestions.append(dataset)
 
@@ -748,7 +836,8 @@ def get_uri_suggestions(config, uri_field, suggester_field, donl_type):
     """
     Get uri suggestions using donl_search_core and managed synonyms
 
-    :param dict[str, Any] config: The configuration to use for selecting DONL entities
+    :param dict[str, Any] config: The configuration to use for selecting DONL
+                                  entities
     :param str uri_field: The uri field to get suggestions from
     :param str suggester_field: The suggester field to put suggestions in
     :param str donl_type: The DONL type to get suggestions for
@@ -756,8 +845,11 @@ def get_uri_suggestions(config, uri_field, suggester_field, donl_type):
     :rtype: list of dict[str, any]
     :return: The list of suggestions
     """
-    search_core = DonlSearchCore(config['solr']['host'], config['authorization'])
-    entities = search_core.select_all_documents('sys_type:{0}'.format(donl_type), [uri_field, 'facet_community'])
+    search_core = DonlSearchCore(config['solr']['host'],
+                                 config['authorization'])
+    entities = search_core.select_all_documents(
+        'sys_type:{0}'.format(donl_type), [uri_field, 'facet_community']
+    )
     uris = {}
 
     for entity in entities:
@@ -779,11 +871,16 @@ def get_uri_suggestions(config, uri_field, suggester_field, donl_type):
 
     languages = ['nl', 'en']
     suggestions = []
+
     for language in languages:
-        synonyms = search_core.select_managed_synonyms('uri_{0}'.format(language))
+        synonyms = search_core.select_managed_synonyms(
+            'uri_{0}'.format(language)
+        )
+
         for uri in uris.keys():
             if uri in synonyms:
                 labels = synonyms[uri]
+
                 for label in labels:
                     suggestions.append({
                         suggester_field: label,
@@ -801,9 +898,9 @@ def get_organization_suggestions(config, donl_type):
     """
     Get organization suggestions for a given type
 
-    :param dict[str, Any] config: The configuration to use for selecting DONL organizations
+    :param dict[str, Any] config: The configuration to use for selecting DONL
+                                  organizations
     :param str donl_type: The DONL type to get suggestions for
-
     :rtype: list of dict[str, any]
     :return: The list of organization suggestions
     """
@@ -814,9 +911,9 @@ def get_theme_suggestions(config, donl_type):
     """
     Get theme suggestions for a given type
 
-    :param dict[str, Any] config: The configuration to use for selecting DONL themes
+    :param dict[str, Any] config: The configuration to use for selecting DONL
+                                  themes
     :param str donl_type: The DONL type to get suggestions for
-
     :rtype: list of dict[str, any]
     :return: The list of theme suggestions
     """
@@ -828,7 +925,8 @@ def update_donl_suggester(args):
     logging.info('input:            none')
 
     config = load_config()
-    suggester_core = DonlSuggesterCore(config['solr']['host'], config['authorization'])
+    suggester_core = DonlSuggesterCore(config['solr']['host'],
+                                       config['authorization'])
 
     logging.info('')
     logging.info('clearing donl_suggester core')
@@ -841,13 +939,16 @@ def update_donl_suggester(args):
 
     logging.info('index results:')
 
-    suggester_core.index_documents(title_suggestions, commit=False, batch_size=200)
+    suggester_core.index_documents(title_suggestions, commit=False,
+                                   batch_size=200)
     logging.info(' titles:          %s', len(title_suggestions))
 
-    suggester_core.index_documents(organization_suggestions, commit=False, batch_size=200)
+    suggester_core.index_documents(organization_suggestions, commit=False,
+                                   batch_size=200)
     logging.info(' organizations:   %s', len(organization_suggestions))
 
-    suggester_core.index_documents(theme_suggestions, commit=False, batch_size=200)
+    suggester_core.index_documents(theme_suggestions, commit=False,
+                                   batch_size=200)
     logging.info(' themes:          %s', len(theme_suggestions))
 
     logging.info('')
@@ -864,26 +965,32 @@ def update_donl_suggester(args):
 
 
 def update_reverse_relations(config):
-    donl_search_core = DonlSearchCore(config['solr']['host'], config['authorization'])
+    donl_search_core = DonlSearchCore(config['solr']['host'],
+                                      config['authorization'])
 
     for field in config['solr']['relations']:
         for relation in config['solr']['relations'][field]:
             logging.info('')
-            logging.info('updating reverse relations from %s to %s', field, relation)
+            logging.info('updating reverse relations from %s to %s',
+                         field, relation)
 
             mapping = config['solr']['relations'][field][relation]
 
             field_entities = donl_search_core.select_all_documents(
-                'sys_type:{0}'.format(field), ['sys_id', mapping['match'], mapping['to']]
+                'sys_type:{0}'.format(field), ['sys_id', mapping['match'],
+                                               mapping['to']]
             )
 
             field_entities_indexed_by_uri = {}
 
             for field_entity in field_entities:
-                field_entities_indexed_by_uri[field_entity[mapping['match']]] = field_entity
+                field_entities_indexed_by_uri[
+                    field_entity[mapping['match']]
+                ] = field_entity
 
             relation_entities = donl_search_core.select_all_documents(
-                'sys_type:{0}'.format(relation), [mapping['match'], mapping['from']]
+                'sys_type:{0}'.format(relation), [mapping['match'],
+                                                  mapping['from']]
             )
 
             field_entities_to_relation_entities = {}
@@ -897,17 +1004,23 @@ def update_reverse_relations(config):
                         if uri not in field_entities_to_relation_entities:
                             field_entities_to_relation_entities[uri] = []
 
-                        field_entities_to_relation_entities[uri].append(relation_entity[mapping['match']])
+                        field_entities_to_relation_entities[uri].append(
+                            relation_entity[mapping['match']]
+                        )
 
-            logging.info(' found %s %ss with %ss', len(field_entities_to_relation_entities.keys()), field, relation)
+            logging.info(' found %s %ss with %ss',
+                         len(field_entities_to_relation_entities.keys()),
+                         field, relation)
 
             deletes = [{
                 'sys_id': field_entity['sys_id'],
                 'relation_group': {
                     'remove': field_entity[mapping['to']]
                 }
-            } for field_entity in field_entities if mapping['to'] in field_entity and field_entity[mapping['match']]
-                                                    not in field_entities_to_relation_entities.iterkeys()]
+            } for field_entity in field_entities
+                if mapping['to'] in field_entity
+                and field_entity[mapping['match']]
+                not in field_entities_to_relation_entities.iterkeys()]
 
             updates = []
             for uri in field_entities_to_relation_entities:
@@ -932,15 +1045,20 @@ def update_relations(args):
 
     config = load_config()
 
-    donl_search_core = DonlSearchCore(config['solr']['host'], config['authorization'])
+    donl_search_core = DonlSearchCore(config['solr']['host'],
+                                      config['authorization'])
 
     for relation_source, mapping in config['solr']['has_relations'].iteritems():
         logging.info('')
         logging.info('relations for %s', relation_source)
 
-        sources = donl_search_core.select_all_documents(fq='sys_type:{0}'.format(relation_source))
-        rels = donl_search_core.select_all_documents(fl=list(set(mapping.values() + ['sys_uri', 'sys_type'])),
-                                                     fq='sys_type:{0}'.format(' OR sys_type:'.join(mapping.keys())))
+        sources = donl_search_core.select_all_documents(
+            fq='sys_type:{0}'.format(relation_source)
+        )
+        rels = donl_search_core.select_all_documents(
+            fl=list(set(mapping.values() + ['sys_uri', 'sys_type'])),
+            fq='sys_type:{0}'.format(' OR sys_type:'.join(mapping.keys()))
+        )
 
         for source in sources:
             source['related_to'] = []
@@ -970,14 +1088,27 @@ def update_relations(args):
                 source['related_to'] = list(set(source['related_to']))
 
         documents_to_update = []
-        [documents_to_update.append(source) for source in sources if len(source['related_to']) > 0]
+        [documents_to_update.append(source)
+         for source in sources if len(source['related_to']) > 0]
 
-        excluded = ['uri_synonym_nl', 'uri_synonym_en', 'text', 'title_autocomplete', 'spellcheck', '_version_']
+        excluded = [
+            'uri_synonym_nl', 'uri_synonym_en', 'text', 'title_autocomplete',
+            'spellcheck', '_version_'
+        ]
 
         for document in documents_to_update:
             for key in document.keys():
-                if key.startswith('facet_') or key.startswith('relation_') or key in excluded:
+                if key in excluded:
                     document.pop(key)
+                    continue
+
+                if key.startswith('facet_'):
+                    document.pop(key)
+                    continue
+
+                if key.startswith('relation_'):
+                    document.pop(key)
+                    continue
 
         logging.info('')
         logging.info('indexing relations')
@@ -994,35 +1125,55 @@ def update_relations(args):
 if '__main__' == __name__:
     import argparse
 
-    parser = argparse.ArgumentParser(description='perform operations on the local Solr installation')
+    parser = argparse.ArgumentParser(description='perform operations on the '
+                                                 'local Solr installation')
     subparser = parser.add_subparsers(title='action', dest='action')
 
-    managed_resources = subparser.add_parser('update_resource', help='update a resource managed by Solr')
-    managed_resources.add_argument('--resource', type=str, choices=['stopwords_nl', 'uri_synonyms', 'hierarchy_theme'],
-                                   help='which resource to update', required=True)
-    managed_resources.add_argument('--reload', type=bool, nargs='?', const=True, default=False,
-                                   help='to reload the core after updating the resource')
-    managed_resources.add_argument('--console', type=bool, nargs='?', const=True, default=False,
+    managed_resources = subparser.add_parser('update_resource',
+                                             help='update a resource managed '
+                                                  'by Solr')
+    managed_resources.add_argument('--resource', type=str,
+                                   choices=['stopwords_nl', 'uri_synonyms',
+                                            'hierarchy_theme'],
+                                   help='which resource to update',
+                                   required=True)
+    managed_resources.add_argument('--reload', type=bool, nargs='?', const=True,
+                                   default=False, help='to reload the core '
+                                                       'after updating the '
+                                                       'resource')
+    managed_resources.add_argument('--console', type=bool, nargs='?',
+                                   const=True, default=False,
                                    help='to enable console logging')
 
-    donl_search = subparser.add_parser('update_donl_search', help='update the index of the donl_search Solr core')
-    donl_search.add_argument('--delta', type=bool, nargs='?', const=True, default=False,
-                             help='only process documents for which changes are detected in the donl_dataset Solr core')
-    donl_search.add_argument('--console', type=bool, nargs='?', const=True, default=False,
-                             help='to enable console logging')
+    donl_search = subparser.add_parser('update_donl_search',
+                                       help='update the index of the '
+                                            'donl_search Solr core')
+    donl_search.add_argument('--delta', type=bool, nargs='?', const=True,
+                             default=False, help='only process documents for '
+                                                 'which changes are detected '
+                                                 'in the donl_dataset Solr '
+                                                 'core')
+    donl_search.add_argument('--console', type=bool, nargs='?', const=True,
+                             default=False, help='to enable console logging')
 
-    donl_search = subparser.add_parser('update_donl_suggester', help='update the index of the donl_suggester Solr core')
-    donl_search.add_argument('--console', type=bool, nargs='?', const=True, default=False,
-                             help='to enable console logging')
+    donl_search = subparser.add_parser('update_donl_suggester',
+                                       help='update the index of the '
+                                            'donl_suggester Solr core')
+    donl_search.add_argument('--console', type=bool, nargs='?', const=True,
+                             default=False, help='to enable console logging')
 
-    donl_relations = subparser.add_parser('update_relations', help='update the relations of all the indexed objects')
-    donl_relations.add_argument('--console', type=bool, nargs='?', const=True, default=False,
-                                help='to enable console logging')
+    donl_relations = subparser.add_parser('update_relations',
+                                          help='update the relations of all '
+                                               'the indexed objects')
+    donl_relations.add_argument('--console', type=bool, nargs='?', const=True,
+                                default=False, help='to enable console logging')
 
     input_arguments = vars(parser.parse_args())
 
-    logging.basicConfig(filename=os.path.join(os.path.dirname(__file__), '../log/solr_updater.log'),
-                        level=logging.INFO, format='%(asctime)s \t %(levelname)s \t %(message)s')
+    logging.basicConfig(filename=os.path.join(os.path.dirname(__file__),
+                                              '../log/solr_updater.log'),
+                        level=logging.INFO,
+                        format='%(asctime)s \t %(levelname)s \t %(message)s')
 
     if input_arguments['console']:
         logging.getLogger().addHandler(logging.StreamHandler())
