@@ -153,7 +153,7 @@
         <field name="kind" type="string" indexed="true" stored="true" multiValued="false"/>
 
         <!-- Ghost field as copy field -->
-        <field name="language" type="string" indexed="false" stored="false" multiValued="false"/>
+        <field name="language" type="string" indexed="false" stored="false" multiValued="true"/>
 
         <!-- Relation fields -->
         <field name="relation_dataset" type="string" indexed="true" stored="true" multiValued="true"/>
