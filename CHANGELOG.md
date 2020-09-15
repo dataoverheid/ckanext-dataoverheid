@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.2.2 (2020/09)
+
+- Bugfix for RDF export of dataset metadata.
+- Added support for the "Ministerie van Sociale Zaken en Werkgelegenheid" community.
+
 ## 2.2.1 (2020/08)
 
 - Bugfix to properly cache the `transformations` key of `config.json` in Redis.

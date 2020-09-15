@@ -519,7 +519,7 @@ class DatasetDCATGraphBuilder(DCATGraphBuilder):
         """
         dataset_def = dcat_config['templates']['dataset_definition']
         distribution = BNode('dataset.' + package['name'] + '.distribution.' +
-                             resource_index + 1)
+                             str(resource_index + 1))
 
         self.add_uri(distribution, self.ns['RDFS'].isDefinedBy,
                      dataset_def.format(package['name']))
