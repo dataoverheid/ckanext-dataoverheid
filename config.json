@@ -246,6 +246,19 @@
         "tags": [
           "corona"
         ]
+      },
+      {
+        "uri": "https://data.overheid.nl/communities/dataregister-minszw",
+        "rules": {
+          "authority": [
+            "http://standaarden.overheid.nl/owms/terms/Ministerie_van_Sociale_Zaken_en_Werkgelegenheid",
+            "http://standaarden.overheid.nl/owms/terms/Uitvoeringsinstituut_Werknemersverzekeringen",
+            "http://standaarden.overheid.nl/owms/terms/Sociale_Verzekeringsbank"
+          ],
+          "source_catalog": [
+            "https://www.rijksoverheid.nl/ministeries/ministerie-van-sociale-zaken-en-werkgelegenheid"
+          ]
+        }
       }
     ],
     "spatial": {
