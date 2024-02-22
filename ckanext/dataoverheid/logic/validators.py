@@ -1,13 +1,17 @@
 # encoding: utf-8
 
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from past.builtins import basestring
 import ckan.plugins.toolkit as tk
 from ckanext.dataoverheid.logic.helpers.config import get_config, \
     in_list as in_code_list
 from datetime import datetime
 from dateutil import parser
 import logging
-from urlparse import urlparse
+from urllib.parse import urlparse
 import re
 
 
@@ -305,7 +309,7 @@ def extract_communities(key, data, errors, context): # noqa
     communities = []
     tags = []
 
-    for key, value in data.iteritems():
+    for key, value in data.items():
         if len(key) == 3 and key[0] == 'tags' and key[2] == 'name':
             tags.append(value)
 
@@ -654,7 +658,7 @@ def spatial(key, data, errors, context): # noqa
     spatial_config = get_config('validation')['spatial']
     validator_mapping = {}
 
-    for scheme_uri, mapping in spatial_config.iteritems():
+    for scheme_uri, mapping in spatial_config.items():
         validator = mapping['validator']
 
         try:

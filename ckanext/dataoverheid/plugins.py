@@ -16,8 +16,8 @@ from ckanext.dataoverheid.logic.authorizations import \
 
 class SchemaPlugin(plugins.SingletonPlugin, tk.DefaultDatasetForm):
     plugins.implements(plugins.IValidators)
-    plugins.implements(plugins.IDatasetForm)
-    plugins.implements(plugins.IPackageController, inherit=True)
+    # plugins.implements(plugins.IDatasetForm)
+    # plugins.implements(plugins.IPackageController, inherit=True)
 
     # IValidators
 
@@ -47,44 +47,44 @@ class SchemaPlugin(plugins.SingletonPlugin, tk.DefaultDatasetForm):
             'postcode_huisnummer': validators.postcode_huisnummer
         }
 
-    # IDatasetForm
-
-    def is_fallback(self): # noqa
-        return tk.asbool(config.get('ckan.ckanext-dataoverheid.is_fallback',
-                                    True))
-
-    def package_types(self): # noqa
-        return tk.aslist(config.get('ckan.ckanext-dataoverheid.package_types',
-                                    []))
-
-    def create_package_schema(self):
-        schema = super(SchemaPlugin, self).create_package_schema()
-        schema = dcat_ap_donl.create_schema(schema)
-        schema = dataoverheid.create_schema(schema)
-
-        return schema
-
-    def update_package_schema(self):
-        schema = super(SchemaPlugin, self).update_package_schema()
-        schema = dcat_ap_donl.update_schema(schema)
-        schema = dataoverheid.update_schema(schema)
-
-        return schema
-
-    def show_package_schema(self):
-        schema = super(SchemaPlugin, self).show_package_schema()
-        schema = dcat_ap_donl.show_schema(schema)
-        schema = dataoverheid.show_schema(schema)
-
-        return schema
-
-    # IPackageController
-
-    def before_index(self, data_dict): # noqa
-        return transformers.transform_multivalued_properties(data_dict)
-
-    def after_show(self, context, data_dict): # noqa
-        return context, transformers.remove_properties(data_dict)
+    # # IDatasetForm
+    #
+    # def is_fallback(self): # noqa
+    #     return tk.asbool(config.get('ckan.ckanext-dataoverheid.is_fallback',
+    #                                 True))
+    #
+    # def package_types(self): # noqa
+    #     return tk.aslist(config.get('ckan.ckanext-dataoverheid.package_types',
+    #                                 []))
+    #
+    # def create_package_schema(self):
+    #     schema = super(SchemaPlugin, self).create_package_schema()
+    #     schema = dcat_ap_donl.create_schema(schema)
+    #     schema = dataoverheid.create_schema(schema)
+    #
+    #     return schema
+    #
+    # def update_package_schema(self):
+    #     schema = super(SchemaPlugin, self).update_package_schema()
+    #     schema = dcat_ap_donl.update_schema(schema)
+    #     schema = dataoverheid.update_schema(schema)
+    #
+    #     return schema
+    #
+    # def show_package_schema(self):
+    #     schema = super(SchemaPlugin, self).show_package_schema()
+    #     schema = dcat_ap_donl.show_schema(schema)
+    #     schema = dataoverheid.show_schema(schema)
+    #
+    #     return schema
+    #
+    # # IPackageController
+    #
+    # def before_index(self, data_dict): # noqa
+    #     return transformers.transform_multivalued_properties(data_dict)
+    #
+    # def after_show(self, context, data_dict): # noqa
+    #     return context, transformers.remove_properties(data_dict)
 
 
 class RDFPlugin(plugins.SingletonPlugin):

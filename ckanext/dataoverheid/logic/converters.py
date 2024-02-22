@@ -1,6 +1,8 @@
 # encoding: utf-8
 
 
+from builtins import map
+from past.builtins import basestring
 def convert_string_to_list(key, data, errors, context): # noqa
     """
     If the value behind `'data.get(key)'` is present, it will be converted to a

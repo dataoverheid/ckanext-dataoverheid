@@ -1,6 +1,8 @@
 # encoding: utf-8
 
 
+from builtins import str
+from builtins import object
 from ckanext.dataoverheid.logic.helpers import config
 from rdflib import Graph, Literal, URIRef, Namespace, BNode
 from rdflib.namespace import NamespaceManager
@@ -9,7 +11,7 @@ from rdflib.namespace import NamespaceManager
 dcat_config = config.get_config('dcat')
 
 
-class DCATGraphBuilder:
+class DCATGraphBuilder(object):
     """
     Enables the modelling of a DCAT-AP-DONL class as valid RDF.
 
@@ -40,12 +42,12 @@ class DCATGraphBuilder:
         self.ns = {}
         namespaces = dcat_config['namespaces']
 
-        for prefix, namespace in namespaces.iteritems():
+        for prefix, namespace in namespaces.items():
             self.ns[prefix] = Namespace(namespace)
 
         ns_manager = NamespaceManager(self.graph)
         [ns_manager.bind(prefix.lower(), namespace, override=True)
-         for prefix, namespace in self.ns.iteritems()]
+         for prefix, namespace in self.ns.items()]
         self.graph.namespace_manager = ns_manager
 
     def add_triple(self, subject, predicate, obj):
@@ -205,7 +207,7 @@ class DCATGraphBuilder:
                                  empty
         :rtype: None
         """
-        has_properties = any((prop in package for prop in spec.keys()))
+        has_properties = any((prop in package for prop in list(spec.keys())))
         class_spec = spec['class']
 
         if not allow_empty and not has_properties:
@@ -214,7 +216,7 @@ class DCATGraphBuilder:
         self.add_triple(target, self.ns['RDF'].type,
                         self.ns[class_spec['namespace']][class_spec['name']])
 
-        for ckan_property, rdf_details in spec.iteritems():
+        for ckan_property, rdf_details in spec.items():
             if ckan_property in self.exclusion:
                 continue
 

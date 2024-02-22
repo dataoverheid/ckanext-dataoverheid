@@ -1,7 +1,8 @@
 # encoding: utf-8
 
 
-from config import get_config
+from __future__ import absolute_import
+from .config import get_config
 
 
 def transform_multivalued_properties(data_dict):

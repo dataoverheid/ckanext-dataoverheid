@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 
+from builtins import str
 from ckanext.dataoverheid.logic.rdf.graph_builder import \
     DatasetDCATGraphBuilder, CatalogDCATGraphBuilder
 import ckan.plugins.toolkit as tk

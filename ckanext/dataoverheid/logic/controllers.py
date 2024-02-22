@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 
+from builtins import bytes
 import ckan.plugins.toolkit as tk
 from ckan.lib.base import BaseController
 from ckanext.dataoverheid.logic.helpers.config import get_config

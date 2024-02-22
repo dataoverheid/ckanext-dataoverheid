@@ -1,15 +1,19 @@
 # encoding: utf-8
 
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import range
+from builtins import object
 import dateutil.parser as date_parser
 import json
 import os
 import logging
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import time
 
 
-class SolrCore:
+class SolrCore(object):
     def __init__(self, solr_host, core_name, auth=None):
         """
         Initialize a SolrCore instance.
@@ -96,7 +100,7 @@ class SolrCore:
                 'rows': documents_per_request,
                 'wt': 'json'
             }
-            query = dict((k, v) for k, v in query.iteritems() if v is not None)
+            query = dict((k, v) for k, v in query.items() if v is not None)
             selected_documents.append(
                 self.select_documents(query)['response']['docs']
             )
@@ -184,7 +188,7 @@ class SolrCore:
         :rtype:  urllib2.Request
         :return: The created urllib2 Request object
         """
-        req = urllib2.Request('{0}/{1}'.format(self.solr_host, request))
+        req = urllib.request.Request('{0}/{1}'.format(self.solr_host, request))
 
         if json_data:
             req.add_header('Content-Type', 'application/json')
@@ -211,13 +215,13 @@ class SolrCore:
             if method:
                 request.get_method = lambda: method
 
-            return urllib2.urlopen(request)
-        except urllib2.HTTPError, e:
+            return urllib.request.urlopen(request)
+        except urllib.error.HTTPError as e:
             logging.error('request failed;')
             logging.error(' response: urllib2.HTTPError')
             logging.error(' call:     %s', request.get_full_url())
             logging.error('           %s', e.reason)
-        except urllib2.URLError, e:
+        except urllib.error.URLError as e:
             logging.error('request failed;')
             logging.error(' call:     %s', request.get_full_url())
             logging.error(' response: urllib2.URLError')
@@ -359,7 +363,7 @@ class DonlSuggesterCore(SolrCore):
         )) is not None
 
 
-class DatasetMapper:
+class DatasetMapper(object):
     def __init__(self, mappings, fields_to_add=None):
         """
         Initializes a DatasetMapper instance.
@@ -393,8 +397,8 @@ class DatasetMapper:
         """
         ignore_list = []
 
-        for key, value in dataset.iteritems():
-            if key not in self.mappings.keys():
+        for key, value in dataset.items():
+            if key not in list(self.mappings.keys()):
                 continue
 
             if isinstance(value, bool):
@@ -405,8 +409,8 @@ class DatasetMapper:
 
         document = {}
 
-        for key, value in dataset.iteritems():
-            if key not in self.mappings.keys() or key in ignore_list:
+        for key, value in dataset.items():
+            if key not in list(self.mappings.keys()) or key in ignore_list:
                 continue
 
             target_key = self.mappings[key]
@@ -420,7 +424,7 @@ class DatasetMapper:
                 document[target_key].append(value)
 
         if self.fields_to_add:
-            for key, value in self.fields_to_add.iteritems():
+            for key, value in self.fields_to_add.items():
                 document[key] = value
 
         return document
@@ -550,7 +554,7 @@ def update_uri_synonyms(core_object):
 
                 continue
 
-            for uri, properties in load_file_as_json(filepath).iteritems():
+            for uri, properties in load_file_as_json(filepath).items():
                 uri_synonyms['uri_nl'][uri] = properties['labels']['nl-NL']
                 uri_synonyms['uri_en'][uri] = properties['labels']['en-US']
 
@@ -558,7 +562,7 @@ def update_uri_synonyms(core_object):
         if taxonomy_file.endswith('.json'):
             filepath = os.path.join(taxonomy_dir, taxonomy_file)
 
-            for uri, properties in load_file_as_json(filepath).iteritems():
+            for uri, properties in load_file_as_json(filepath).items():
                 uri_synonyms['uri_nl'][uri] = properties['label_nl']
                 uri_synonyms['uri_en'][uri] = properties['label_en']
 
@@ -579,8 +583,8 @@ def update_uri_synonyms(core_object):
         logging.info(' current:         %s synonyms', len(current_uri_synonyms))
 
         synonyms_to_add = {key: value
-                           for key, value in uri_synonyms[lang].iteritems()
-                           if key not in current_uri_synonyms.keys()}
+                           for key, value in uri_synonyms[lang].items()
+                           if key not in list(current_uri_synonyms.keys())}
 
         logging.info(' adding:          %s synonyms', len(synonyms_to_add))
 
@@ -622,8 +626,8 @@ def update_hierarchy_theme(core_object):
                      len(current_hierarchy_theme))
 
         themes_to_add = {key: value
-                         for key, value in hierarchy_theme.iteritems()
-                         if key not in current_hierarchy_theme.keys()}
+                         for key, value in hierarchy_theme.items()
+                         if key not in list(current_hierarchy_theme.keys())}
 
         logging.info(' adding:          %s synonyms', len(themes_to_add))
 
@@ -683,11 +687,11 @@ def determine_datasets_to_update(index_type, dataset_mapping,
     """
     datasets_to_update = {}
 
-    for key, dataset in mapped_solr_datasets.iteritems():
-        if key not in mapped_ckan_datasets.keys():
+    for key, dataset in mapped_solr_datasets.items():
+        if key not in list(mapped_ckan_datasets.keys()):
             continue
 
-        if key in datasets_to_update.keys():
+        if key in list(datasets_to_update.keys()):
             continue
 
         ckan_dataset = mapped_ckan_datasets[key]
@@ -698,11 +702,11 @@ def determine_datasets_to_update(index_type, dataset_mapping,
 
         date_key = dataset_mapping['metadata_modified']
 
-        if date_key not in dataset.keys():
+        if date_key not in list(dataset.keys()):
             datasets_to_update[key] = ckan_dataset
             continue
 
-        if date_key not in ckan_dataset.keys():
+        if date_key not in list(ckan_dataset.keys()):
             datasets_to_update[key] = ckan_dataset
             continue
 
@@ -743,7 +747,7 @@ def update_donl_search(args):
     logging.info('')
 
     ckan_datasets = donl_dataset_core.select_all_documents(
-        fl=dataset_mapping.keys()
+        fl=list(dataset_mapping.keys())
     )
     logging.info('ckan datasets:    %s', len(ckan_datasets))
 
@@ -760,15 +764,15 @@ def update_donl_search(args):
     logging.info('datasets mapped to donl_search schema')
 
     datasets_to_create = {dataset_key: dataset for dataset_key, dataset
-                          in mapped_ckan_datasets.iteritems()
-                          if dataset_key not in mapped_solr_datasets.keys()}
+                          in mapped_ckan_datasets.items()
+                          if dataset_key not in list(mapped_solr_datasets.keys())}
     datasets_to_update = determine_datasets_to_update(args['delta'],
                                                       dataset_mapping,
                                                       mapped_ckan_datasets,
                                                       mapped_solr_datasets)
     datasets_to_delete = {dataset_key: dataset for dataset_key, dataset
-                          in mapped_solr_datasets.iteritems()
-                          if dataset_key not in mapped_ckan_datasets.keys()}
+                          in mapped_solr_datasets.items()
+                          if dataset_key not in list(mapped_ckan_datasets.keys())}
 
     logging.info('')
     logging.info('analysis:')
@@ -780,13 +784,13 @@ def update_donl_search(args):
 
     logging.info('index results:')
 
-    donl_search_core.index_documents(datasets_to_create.values(), commit=False)
+    donl_search_core.index_documents(list(datasets_to_create.values()), commit=False)
     logging.info(' new:             %s', len(datasets_to_create))
 
-    donl_search_core.index_documents(datasets_to_update.values(), commit=False)
+    donl_search_core.index_documents(list(datasets_to_update.values()), commit=False)
     logging.info(' updated:         %s', len(datasets_to_update))
 
-    for sys_id in datasets_to_delete.keys():
+    for sys_id in list(datasets_to_delete.keys()):
         donl_search_core.delete_documents('sys_id:{0}'.format(sys_id),
                                           commit=False)
     logging.info(' deleted:         %s', len(datasets_to_delete))
@@ -818,7 +822,7 @@ def get_dataset_title_suggestions(config):
     search_core = DonlSearchCore(config['solr']['host'],
                                  config['authorization'])
     datasets = search_core.select_all_documents('sys_type:dataset',
-                                                mappings.keys())
+                                                list(mappings.keys()))
     title_suggestions = []
 
     for dataset in datasets:
@@ -877,7 +881,7 @@ def get_uri_suggestions(config, uri_field, suggester_field, donl_type):
             'uri_{0}'.format(language)
         )
 
-        for uri in uris.keys():
+        for uri in list(uris.keys()):
             if uri in synonyms:
                 labels = synonyms[uri]
 
@@ -1009,7 +1013,7 @@ def update_reverse_relations(config):
                         )
 
             logging.info(' found %s %ss with %ss',
-                         len(field_entities_to_relation_entities.keys()),
+                         len(list(field_entities_to_relation_entities.keys())),
                          field, relation)
 
             deletes = [{
@@ -1020,7 +1024,7 @@ def update_reverse_relations(config):
             } for field_entity in field_entities
                 if mapping['to'] in field_entity
                 and field_entity[mapping['match']]
-                not in field_entities_to_relation_entities.iterkeys()]
+                not in iter(field_entities_to_relation_entities.keys())]
 
             updates = []
             for uri in field_entities_to_relation_entities:
@@ -1048,7 +1052,7 @@ def update_relations(args):
     donl_search_core = DonlSearchCore(config['solr']['host'],
                                       config['authorization'])
 
-    for relation_source, mapping in config['solr']['has_relations'].iteritems():
+    for relation_source, mapping in config['solr']['has_relations'].items():
         logging.info('')
         logging.info('relations for %s', relation_source)
 
@@ -1056,8 +1060,8 @@ def update_relations(args):
             fq='sys_type:{0}'.format(relation_source)
         )
         rels = donl_search_core.select_all_documents(
-            fl=list(set(mapping.values() + ['sys_uri', 'sys_type'])),
-            fq='sys_type:{0}'.format(' OR sys_type:'.join(mapping.keys()))
+            fl=list(set(list(mapping.values()) + ['sys_uri', 'sys_type'])),
+            fq='sys_type:{0}'.format(' OR sys_type:'.join(list(mapping.keys())))
         )
 
         for source in sources:
@@ -1066,7 +1070,7 @@ def update_relations(args):
         logging.info(' subjects:        %s', len(sources))
         logging.info(' relations:       %s', len(rels))
 
-        for mapping_target, mapping_source in mapping.iteritems():
+        for mapping_target, mapping_source in mapping.items():
             for source in sources:
                 if mapping_target in source['related_to']:
                     continue
@@ -1097,7 +1101,7 @@ def update_relations(args):
         ]
 
         for document in documents_to_update:
-            for key in document.keys():
+            for key in list(document.keys()):
                 if key in excluded:
                     document.pop(key)
                     continue

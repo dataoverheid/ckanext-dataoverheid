@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 
+from builtins import str
 import os
 import json
 from datetime import datetime
@@ -81,12 +82,12 @@ def _load_list(name, local_name, list_type='vocabulary'):
 
             try:
                 return [block['id'] for block in parsed] if name in special \
-                    else parsed.keys()
+                    else list(parsed.keys())
             except KeyError:
                 raise Exception(name + ' is malformed')
     except KeyError:
         raise Exception('the requested vocabulary ' + name + ' does not exist '
-                        'or is not supported')
+                                                             'or is not supported')
 
 
 def _load_config_file():
@@ -125,11 +126,11 @@ def _load_config_file():
 
         [redis_conn.set(redis_key + 'vocabulary.{0}'.format(key),
                         json.dumps(_load_list(key, voc['local'], 'vocabulary')))
-         for key, voc in contents.get('validation')['vocabularies'].iteritems()]
+         for key, voc in contents.get('validation')['vocabularies'].items()]
 
         [redis_conn.set(redis_key + 'taxonomy.{0}'.format(key),
                         json.dumps(_load_list(key, tax['local'], 'taxonomy')))
-         for key, tax in contents.get('validation')['taxonomies'].iteritems()]
+         for key, tax in contents.get('validation')['taxonomies'].items()]
 
 
 redis_key = 'ckanext.dataoverheid:'
