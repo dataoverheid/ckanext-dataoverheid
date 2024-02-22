@@ -1,5 +1,11 @@
 # Changelog
 
+
+## 2.2.3 (2024/02)
+
+- Futurize Extension
+- Remove IDatasetForm and IPackageController Interfaces from SchemaPlugin
+
 ## 2.2.2 (2020/09)
 
 - Bugfix for RDF export of dataset metadata.
